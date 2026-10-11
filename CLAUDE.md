@@ -3,7 +3,8 @@
 Morphologische Matrix (Zwicky-Box) als Web-App ohne Server: Vite 8, Preact 10 + @preact/signals,
 Daten nur im Browser (localStorage), veröffentlicht über GitHub Pages. Aufbau, Funktionen und die
 Tabelle aller Module stehen in der [README](README.md), das Datenformat in
-[docs/DATENFORMAT.md](docs/DATENFORMAT.md), Stand und offene Ideen in [docs/ROADMAP.md](docs/ROADMAP.md).
+[docs/DATENFORMAT.md](docs/DATENFORMAT.md), Stand und offene Ideen in [docs/ROADMAP.md](docs/ROADMAP.md), das Konzept für ein optionales Backend
+(Konto, Sync, Versionen; noch nicht umgesetzt) in [docs/BACKEND.md](docs/BACKEND.md).
 
 ## Zusammenarbeit (Vereinbarungen mit dem Maintainer)
 

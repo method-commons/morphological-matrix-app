@@ -44,7 +44,7 @@ Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösung
 ## Zurückgestellt (Entscheidung des Maintainers)
 
 - neue Standardbewertungen (über Kosten, Nutzwert, MoSCoW hinaus) – später entscheiden
-- geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups)
+- geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups) – wieder aufgenommen als Backend mit Konto und Versionen: Konzept in [BACKEND.md](BACKEND.md), Entscheidungen offen
 - Immer bzw. Valibot als Bibliotheken
 
 ## Ideen für Folgeschritte zu den Vorlagen
