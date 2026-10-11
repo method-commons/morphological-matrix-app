@@ -5,6 +5,7 @@
  * nur; sie fließen nicht in Nutzwert, automatische Konzepte oder Pareto-Front ein.
  * Ohne DOM und ohne globalen Zustand; exportiert den Namensraum `Attributes`.
  */
+import { Limits } from './limits.js';
 import { Texts } from './texts.js';
 import { Util } from './util.js';
 
@@ -58,7 +59,7 @@ export const Attributes = (() => {
     const op = raw && raw.op;
     if (!LIMITS[type].includes(op)) return null;
     if (op === 'allYes') return { op };
-    if (op === 'level' || op === 'levelBelow') {
+    if (Limits.isLevel(raw)) {
       const level = str(raw.value);
       return levels.some(l => l.id === level) ? { op, value: level } : null;
     }
@@ -174,12 +175,11 @@ export const Attributes = (() => {
     const l = a.limit;
     if (!l) return '';
     if (l.op === 'allYes') return Texts.attributes.limitText.allYes;
-    if (l.op === 'level' || l.op === 'levelBelow') return Texts.attributes.limitText[l.op](levelLabel(a, l.value));
+    if (Limits.isLevel(l)) return Texts.attributes.limitText[l.op](levelLabel(a, l.value));
     return Texts.attributes.limitText[l.op](formatNumber(a, l.value, Number.isInteger(l.value) ? a.decimals : 2));
   }
 
-  /** Überschreitet ein einzelner Zahlenwert die Grenze? @param {AttributeLimit} l @param {number} v */
-  const beyond = (l, v) => (l.op === 'above' ? v > l.value : l.op === 'below' ? v < l.value : false);
+  const beyond = Limits.numberBeyond;
 
   /**
    * Zusammenfassung eines Merkmals für ein Konzept.
@@ -221,9 +221,8 @@ export const Attributes = (() => {
       const idx = values.map(v => a.levels.findIndex(x => x.id === v)).filter(i => i >= 0);
       if (!idx.length) return { ...base, text: '', sort: null, warn: false };
       const i = a.aggregate === 'min' ? Math.min(...idx) : Math.max(...idx);
-      const at = l && (l.op === 'level' || l.op === 'levelBelow') ? a.levels.findIndex(x => x.id === l.value) : -1;
       // Warnung, sobald eine gewählte Ausprägung ab (bzw. unter) der Grenzstufe liegt
-      const warn = at >= 0 && idx.some(k => (l && l.op === 'levelBelow' ? k < at : k >= at));
+      const warn = Limits.isLevel(l) && idx.some(k => Limits.levelBeyond(l, k, a.levels.findIndex(x => x.id === l.value)));
       if (a.aggregate === 'counts') {
         // Anzahl je Stufe, höchste zuerst („2 × Quick Win · 1 × Zeitfresser“); ohne Rangfolge, daher nicht sortierbar
         const text = a.levels.map((x, k) => [k, idx.filter(j => j === k).length]).filter(([, n]) => n).reverse()
@@ -250,6 +249,12 @@ export const Attributes = (() => {
     const digits = a.aggregate === 'avg' && a.type === 'int' ? 1 : (nums.some(v => isInvalid(a, v)) ? 2 : a.decimals);
     return { ...base, text: formatNumber(a, value, digits), sort: value, warn: !!l && beyond(l, value) };
   }
+
+  /**
+   * Fehlende Werte mit „*“ markieren? Nicht bei Listen und Ja/Nein (dort ist das Fehlen schon im
+   * Text sichtbar) und ohne Zusammenfassung. @param {MatrixAttribute} a @param {AttributeSummary} sum
+   */
+  const marksMissing = (a, sum) => sum.missing > 0 && !!sum.text && a.type !== 'text' && a.type !== 'bool' && a.aggregate !== 'none';
 
   /** Lässt sich nach dem Merkmal sortieren? @param {MatrixAttribute} a */
   const sortable = a => (a.type === 'choice' && a.aggregate !== 'counts') || a.type === 'bool' || (isNumeric(a.type) && a.aggregate !== 'none');
@@ -335,7 +340,7 @@ export const Attributes = (() => {
     a.aggregate = t.aggregate;
     const l = t.limit;
     if (l && l.op === 'allYes') a.limit = { op: 'allYes' };
-    else if (l && (l.op === 'level' || l.op === 'levelBelow') && a.levels[l.level]) a.limit = { op: l.op, value: a.levels[l.level].id };
+    else if (l && a.levels[l.level]) a.limit = { op: l.op, value: a.levels[l.level].id };
     return a;
   }
 
@@ -347,7 +352,7 @@ export const Attributes = (() => {
 
   return {
     TEMPLATES, fromTemplate, hasTemplate,
-    TYPES, AGGREGATES, LIMITS, isNumeric, newAttribute, newLevel, normalizeAttributes, normalizeValues, normalizeLimit, valueFor,
+    TYPES, AGGREGATES, LIMITS, isLevelLimit: Limits.isLevel, marksMissing, isNumeric, newAttribute, newLevel, normalizeAttributes, normalizeValues, normalizeLimit, valueFor,
     label, levelLabel, formatValue, formatNumber, isInvalid, limitText, summarize, sortable, aggregateLabel, shortText, convertValue,
   };
 })();

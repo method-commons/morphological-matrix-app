@@ -30,9 +30,11 @@ type AttributeAggregate = 'sum' | 'min' | 'max' | 'avg' | 'none' | 'count' | 'li
 /** Grenze, ab der der Vergleich warnt (Zahl über/unter einem Wert, ab einer Stufe, nicht alle Ja) */
 type AttributeLimit =
   | { op: 'above' | 'below', value: number }
-  | { op: 'level', value: string }
-  | { op: 'levelBelow', value: string }
+  | LevelLimit
   | { op: 'allYes' };
+
+/** Grenze an einer Stufe: „ab Stufe“ bzw. „unter Stufe“ (Wert = Stufen-ID) */
+type LevelLimit = { op: 'level', value: string } | { op: 'levelBelow', value: string };
 
 /** Vorlage für ein Merkmal (Texte in der Sprachdatei); Grenze bei Stufen als Index der Stufe */
 interface AttributeTemplate {

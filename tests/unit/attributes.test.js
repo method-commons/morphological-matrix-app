@@ -222,3 +222,26 @@ test('Vorlagen der Gruppe „Methoden“: Kano und Wert/Aufwand mit Verteilung u
   assert.equal(Attributes.limitText(ve), 'unter Stufe „Lückenfüller“');
   assert.ok(Attributes.TEMPLATES.find(g => g.group === 'methods').items.length === 2);
 });
+
+test('Limits: gemeinsame Regeln für Stufen- und Zahlengrenzen; Sternchen bei fehlenden Werten', async () => {
+  const { Limits } = await import('../../js/limits.js');
+  assert.equal(Limits.isLevel({ op: 'level', value: 'x' }), true);
+  assert.equal(Limits.isLevel({ op: 'levelBelow', value: 'x' }), true);
+  assert.equal(Limits.isLevel({ op: 'above', value: 1 }), false);
+  assert.equal(Limits.isLevel(null), false);
+  assert.equal(Limits.levelBeyond({ op: 'level', value: 'x' }, 2, 2), true);
+  assert.equal(Limits.levelBeyond({ op: 'level', value: 'x' }, 1, 2), false);
+  assert.equal(Limits.levelBeyond({ op: 'levelBelow', value: 'x' }, 1, 2), true);
+  assert.equal(Limits.levelBeyond({ op: 'levelBelow', value: 'x' }, 2, 2), false);
+  assert.equal(Limits.levelBeyond({ op: 'level', value: 'x' }, 5, -1), false); // unbekannte Stufe
+  assert.equal(Limits.numberBeyond({ op: 'above', value: 4 }, 4.5), true);
+  assert.equal(Limits.numberBeyond({ op: 'below', value: 4 }, 4), false);
+  assert.equal(Limits.numberBeyond({ op: 'allYes' }, 0), false);
+
+  const sum = { missing: 1, text: '3 kg' };
+  assert.equal(Attributes.marksMissing({ type: 'decimal', aggregate: 'sum' }, sum), true);
+  assert.equal(Attributes.marksMissing({ type: 'decimal', aggregate: 'none' }, sum), false);
+  assert.equal(Attributes.marksMissing({ type: 'bool', aggregate: 'count' }, sum), false);
+  assert.equal(Attributes.marksMissing({ type: 'decimal', aggregate: 'sum' }, { missing: 1, text: '' }), false);
+  assert.equal(Attributes.marksMissing({ type: 'decimal', aggregate: 'sum' }, { missing: 0, text: '3 kg' }), false);
+});

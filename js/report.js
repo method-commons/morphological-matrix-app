@@ -85,7 +85,7 @@ export const Report = (() => {
    */
   const attributeFigures = (m, c) => m.settings.attributes.map((a, i) => {
     const sum = Attributes.summarize(m, a, c);
-    const star = sum.missing > 0 && sum.text && a.type !== 'text' && a.type !== 'bool' && a.aggregate !== 'none';
+    const star = Attributes.marksMissing(a, sum);
     return {
       name: Attributes.label(a, i),
       label: Texts.attributes.compareRow(Attributes.label(a, i), Attributes.aggregateLabel(a)),

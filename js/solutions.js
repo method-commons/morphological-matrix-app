@@ -9,6 +9,7 @@
  * besser als der schlechteste bisherige Treffer werden kann. Reicht das Rechenbudget nicht,
  * ist das Ergebnis als unvollständig markiert.
  */
+import { Limits } from './limits.js';
 
 /**
  * @typedef {{
@@ -233,13 +234,9 @@ export const Solutions = (() => {
         const v = vals[i][k];
         if (l.op === 'allYes' && v !== 1) return true;
         if (v == null) continue;
-        if (l.op === 'level' || l.op === 'levelBelow') {
-          const at = a.levels.findIndex(x => x.id === l.value);
-          if (at >= 0 && (l.op === 'level' ? v >= at : v < at)) return true;
-        }
+        if (Limits.isLevel(l) && Limits.levelBeyond(l, v, a.levels.findIndex(x => x.id === l.value))) return true;
         // Ohne Zusammenfassung zählt jeder einzelne Wert
-        if ((a.type === 'int' || a.type === 'decimal') && a.aggregate === 'none'
-          && ((l.op === 'above' && v > l.value) || (l.op === 'below' && v < l.value))) return true;
+        if ((a.type === 'int' || a.type === 'decimal') && a.aggregate === 'none' && Limits.numberBeyond(l, v)) return true;
       }
       return false;
     }

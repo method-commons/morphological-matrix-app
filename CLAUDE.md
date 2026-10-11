@@ -31,7 +31,7 @@ Chromium ist vorinstalliert; kein `playwright install`.
 - **Logik ohne DOM** in `js/*.js` (Namensräume `Model`, `Ops`, `Evaluation`, `Consistency`, `Attributes`, `Solutions`, `IO`, `Report` …), Oberfläche in `js/ui/*.jsx`.
 - **Zustand:** `state` in `js/ui/core.js` ist ein normales Objekt; neu gezeichnet wird über das Signal `revision` (`render()`), Komponenten lesen es mit `useMatrix()`. Das Neuzeichnen ist synchron (`options.debounceRendering = cb => cb()` in `main.js`).
 - **Änderungen:** strukturell mit `mutate(fn)` (Verlaufseintrag, Speichern, Neuzeichnen); Eingabefelder mit `{...fieldProps(apply)}` (Verlaufseintrag beim Verlassen).
-- **Web Worker:** `count-worker.js` (Zählung, Restzahlen) und `solutions-worker.js` (Lösungsraum) importieren nur texte-freie Module (`counting.js`, `solutions.js`), damit sie klein bleiben.
+- **Web Worker:** `count-worker.js` (Zählung, Restzahlen) und `solutions-worker.js` (Lösungsraum) importieren nur texte-freie Module (`counting.js`, `solutions.js`, `limits.js`), damit sie klein bleiben.
 - **Texte** nur in `js/i18n/de.js` (maßgeblich) und `en.js` (gleiche Struktur, wird geprüft). Statische Texte in `index.html` über `data-i18n`.
 - **CSS** in `css/*.css`, eingebunden in `styles.css` mit Kaskaden-Ebenen; die Import-Reihenfolge ist die Reihenfolge innerhalb einer Ebene.
 

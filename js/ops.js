@@ -307,7 +307,7 @@ export const Ops = (() => {
     const a = m.settings.attributes.find(x => x.id === aid);
     if (!a) return;
     a.levels = a.levels.filter(l => l.id !== levelId);
-    if (a.limit && (a.limit.op === 'level' || a.limit.op === 'levelBelow') && a.limit.value === levelId) a.limit = null;
+    if (Attributes.isLevelLimit(a.limit) && a.limit.value === levelId) a.limit = null;
     for (const p of m.parameters) for (const o of p.options) if (o.values[aid] === levelId) delete o.values[aid];
   }
 

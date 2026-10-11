@@ -17,10 +17,10 @@ import {
 } from './core.js';
 import { $ } from './dom.jsx';
 import { CompareChart } from './render-chart.jsx';
-import { AttributesEditor } from './attributes.jsx';
+import { AttributesEditor } from './attribute-editor.jsx';
 import { openSolutions } from './solutions.jsx';
 import { CompareScatter } from './render-scatter.jsx';
-import { compareContent, CompareTable, CompareTools } from './render-panels.jsx';
+import { compareContent, CompareTable, CompareTools } from './compare.jsx';
 
 /** Bearbeiten / Kombinieren. */
 function ModeSwitch() {
