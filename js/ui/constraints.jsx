@@ -13,7 +13,7 @@ import { fieldProps, mutate, prefs, state, useMatrix } from './core.js';
 import { consistentCount } from './count.js';
 import { $, closeDialog, openDialog, placeNear } from './dom.jsx';
 import { IconButton } from './components.jsx';
-import { formatCount } from './render-panels.jsx';
+import { formatCount } from './stats.jsx';
 
 /** Ausprägung samt Parameter und Anzeigetexten zu einer ID. @param {string} oid */
 function optionRef(oid) {

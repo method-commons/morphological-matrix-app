@@ -49,10 +49,9 @@ Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösung
 
 ## Quelltext und Infrastruktur
 
-Umgesetzt (Schritt A): Veröffentlichung erst nach grüner CI, Browser-Cache in der CI, Mindestabdeckung, Dependabot.
+Umgesetzt: (A) Veröffentlichung erst nach grüner CI, Browser-Cache in der CI, Mindestabdeckung, Dependabot; (B) Grenzregeln in `js/limits.js` und `Attributes.marksMissing` zusammengeführt, `attributes.jsx` und `render-panels.jsx` aufgeteilt.
 Offen:
 
-- **B:** Prüfregeln der Merkmale zusammenführen (Grenzen ab/unter Stufe, Sternchen bei fehlenden Werten; `solutions.js` bildet die Grenzen parallel nach) und große UI-Dateien aufteilen (`js/ui/attributes.jsx`, `js/ui/render-panels.jsx`).
 - **C:** strengere Typprüfung der Oberfläche (`noImplicitAny`), ggf. mit TypeScript 7; Preact 11 prüfen.
 - **D (optional):** Bundle verkleinern (inaktive Sprache und selten genutzte Dialoge nachladen), E2E-Tests zusätzlich in Handy-Breite.
 
