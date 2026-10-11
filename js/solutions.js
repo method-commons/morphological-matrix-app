@@ -233,9 +233,9 @@ export const Solutions = (() => {
         const v = vals[i][k];
         if (l.op === 'allYes' && v !== 1) return true;
         if (v == null) continue;
-        if (l.op === 'level') {
+        if (l.op === 'level' || l.op === 'levelBelow') {
           const at = a.levels.findIndex(x => x.id === l.value);
-          if (at >= 0 && v >= at) return true;
+          if (at >= 0 && (l.op === 'level' ? v >= at : v < at)) return true;
         }
         // Ohne Zusammenfassung zählt jeder einzelne Wert
         if ((a.type === 'int' || a.type === 'decimal') && a.aggregate === 'none'

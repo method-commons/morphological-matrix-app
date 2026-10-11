@@ -80,6 +80,12 @@ test('Grenzen der Merkmale: entspricht der Warnung im Vergleich', () => {
   m.settings.attributes[1].aggregate = 'avg';
   const q = query({ limits: true });
   assert.equal(Solutions.search(m, q).matched, brute(m, q).length, 'Mittelwert');
+  // Grenze „unter Stufe“: jede gewählte Ausprägung unter „B“ schließt aus
+  m.settings.attributes.find(a => a.id === 'r').limit = { op: 'levelBelow', value: 'l2' };
+  m.parameters[3].options[0].values.r = 'l1';
+  const below = Solutions.search(m, q).matched;
+  assert.equal(below, brute(m, q).length, 'unter Stufe');
+  assert.ok(below > 0);
 });
 
 for (const sort of ['utility', 'cost', 'priceValue', 'attr:gew:asc', 'attr:gew:desc', 'attr:db:asc']) {

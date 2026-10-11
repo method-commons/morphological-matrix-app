@@ -120,3 +120,47 @@ test('Merkmal löschen fragt nach und lässt sich rückgängig machen; Suche fin
   await menu(page, 'settings');
   await expect(page.locator('.attr-item')).toHaveCount(3);
 });
+
+test('Merkmale aus Vorlagen: vorhandene ausgegraut, mehrere auf einmal anlegen, Grenze „unter Stufe“ warnt', async ({ page }) => {
+  await menu(page, 'settings');
+  await page.click('#attrTemplateBtn');
+  const picker = page.locator('#attrTemplates');
+  await expect(page.locator('#attrTemplateBtn')).toHaveAttribute('aria-expanded', 'true');
+  // Gewicht und Lautstärke gibt es im Beispiel schon
+  await expect(picker.locator('[data-template="weight"] input')).toBeDisabled();
+  await expect(picker.locator('[data-template="weight"]')).toContainText('vorhanden');
+  await expect(picker.locator('[data-template="maturity"]')).toContainText('Stufen: Idee · Prototyp · erprobt · Serie · je Konzept: niedrigste Stufe · ⚠ unter Stufe „erprobt“');
+  await expect(page.locator('#attrTemplateApply')).toBeDisabled();
+  await picker.locator('[data-template="maturity"] input').check();
+  await picker.locator('[data-template="recyclable"] input').check();
+  await expect(picker.locator('.tpl-foot')).toContainText('2 ausgewählt');
+  await page.click('#attrTemplateApply');
+  await expect(picker).toHaveCount(0);
+  await expect(page.locator('.attr-item b')).toHaveText(['Gewicht', 'Lautstärke', 'Reifegrad', 'Recyclingfähig']);
+  await expect(page.locator('.attr-item.is-new')).toHaveCount(2);
+  await expect(page.locator('.attr-item', { hasText: 'Recyclingfähig' })).toContainText('Ja/Nein · je Konzept: Anzahl Ja · ⚠ nicht alle Ja');
+  // Erneut geöffnet: die neuen sind jetzt vorhanden
+  await page.click('#attrTemplateBtn');
+  await expect(picker.locator('[data-template="maturity"] input')).toBeDisabled();
+  await picker.getByRole('button', { name: 'Abbrechen' }).click();
+  await expect(picker).toHaveCount(0);
+
+  // Grenze umschalten: „ab Stufe“ ↔ „unter Stufe“ behält die Stufe
+  const item = page.locator('.attr-item', { hasText: 'Reifegrad' });
+  await item.locator('.attr-title').click();
+  await expect(item.locator('[data-attr-limit]')).toHaveValue(await item.locator('[data-attr-limit] option', { hasText: 'erprobt' }).getAttribute('value'));
+  await item.locator('[data-attr-limit-op]').selectOption('level');
+  await expect(item.locator('.attr-title small')).toContainText('⚠ ab Stufe „erprobt“');
+  await item.locator('[data-attr-limit-op]').selectOption('levelBelow');
+  await expect(item.locator('.attr-title small')).toContainText('⚠ unter Stufe „erprobt“');
+  await page.click('#settingsDone');
+
+  // Werte erfassen (Tabelle) und Warnung im Vergleich: Kompakt-Espresso hat eine „Idee“
+  await page.click('[data-mode="edit"]');
+  await page.locator('.opt-cell.edit[data-oid="p1o3"] [data-attr-btn]').click();
+  const pop = page.locator('#attrPop');
+  await pop.getByLabel('Reifegrad von Thermoblock').selectOption({ label: 'Idee' });
+  await page.keyboard.press('Escape');
+  const row = page.locator('#compareTable .attr-row', { hasText: 'Reifegrad' });
+  await expect(row.locator('td').first()).toContainText('⚠ unter Stufe „erprobt“');
+});

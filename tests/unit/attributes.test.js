@@ -2,7 +2,7 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { loadApp, plain } from './load.js';
 
-const { Attributes, Model, Ops, Evaluation } = loadApp();
+const { Attributes, Model, Ops, Evaluation, Languages } = loadApp();
 
 /** Matrix mit zwei Parametern und je zwei Ausprägungen; Konzept c1 wählt jeweils die erste. */
 function matrix(attributes, values = {}) {
@@ -136,4 +136,57 @@ test('Vergleich: nach Merkmal sortieren (auf- und absteigend); Suche findet Text
   assert.deepEqual(Evaluation.rankConcepts(m, report, 'attr:t:asc').map(r => r.rank), [null, null]); // Text: nicht sortierbar
   assert.deepEqual([...Model.search(m, 'edelst').options], ['a1']);
   assert.deepEqual([...Model.search(m, 'serienreif').options], ['a2']);
+});
+
+test('Grenze „unter Stufe“: warnt, sobald eine gewählte Stufe darunter liegt; Stufe löschen entfernt sie', () => {
+  const m = matrix([
+    { id: 'r', name: 'Reife', type: 'choice', levels: [{ id: 'l1', name: 'Idee' }, { id: 'l2', name: 'Prototyp' }, { id: 'l3', name: 'Serie' }], aggregate: 'max', limit: { op: 'levelBelow', value: 'l2' } },
+  ], { a1: { r: 'l1' }, b1: { r: 'l3' }, a2: { r: 'l2' }, b2: { r: 'l3' } });
+  const [r] = m.settings.attributes;
+  assert.deepEqual(plain(r.limit), { op: 'levelBelow', value: 'l2' });
+  assert.equal(Attributes.limitText(r), 'unter Stufe „Prototyp“');
+  // Höchste Stufe ist „Serie“, aber „Idee“ liegt unter „Prototyp“
+  assert.equal(Attributes.summarize(m, r, m.concepts[0]).text, 'Serie');
+  assert.equal(Attributes.summarize(m, r, m.concepts[0]).warn, true);
+  assert.equal(Attributes.summarize(m, r, m.concepts[1]).warn, false);
+  // Unbekannte Stufe als Grenze entfällt
+  assert.equal(Attributes.normalizeLimit({ op: 'levelBelow', value: 'x' }, 'choice', r.levels), null);
+  Ops.deleteLevel(m, 'r', 'l2');
+  assert.equal(r.limit, null);
+});
+
+test('Vorlagen: eindeutige Schlüssel, Texte in beiden Sprachen, gültige Merkmale', () => {
+  const items = Attributes.TEMPLATES.flatMap(g => g.items);
+  assert.equal(new Set(items.map(t => t.key)).size, items.length);
+  for (const [lang, pack] of Object.entries(Languages.packs)) {
+    const T = pack.attributes;
+    for (const g of Attributes.TEMPLATES) assert.ok(T.templateGroups[g.group], `${lang}: Gruppe ${g.group}`);
+    for (const t of items) {
+      const text = T.templates[t.key];
+      assert.ok(text && text.name, `${lang}: ${t.key}`);
+      // Stufen nur bei Auswahl, in allen Sprachen gleich viele (Grenzen verweisen auf den Index)
+      assert.equal(text.levels?.length, t.type === 'choice' ? Languages.packs.de.attributes.templates[t.key].levels.length : undefined, `${lang}: ${t.key}`);
+    }
+  }
+  for (const t of items) {
+    const a = Attributes.fromTemplate(t);
+    // Ergebnis übersteht die Prüfung unverändert (Form, Zusammenfassung, Grenze passen zusammen)
+    assert.deepEqual(plain(Attributes.normalizeAttributes([a])[0]), plain(a), t.key);
+    if (t.limit) assert.ok(a.limit, `Grenze gesetzt (${t.key})`);
+  }
+});
+
+test('Vorlagen: Reifegrad und Risiko vorbelegt; vorhandene Namen werden erkannt', () => {
+  const find = key => Attributes.TEMPLATES.flatMap(g => g.items).find(t => t.key === key);
+  const maturity = Attributes.fromTemplate(find('maturity'));
+  assert.deepEqual(maturity.levels.map(l => l.name), ['Idee', 'Prototyp', 'erprobt', 'Serie']);
+  assert.equal(maturity.aggregate, 'min');
+  assert.equal(Attributes.limitText(maturity), 'unter Stufe „erprobt“');
+  const risk = Attributes.fromTemplate(find('risk'));
+  assert.equal(Attributes.limitText(risk), 'ab Stufe „hoch“');
+  assert.equal(Attributes.fromTemplate(find('weight')).unit, 'kg');
+  // Zwei Merkmale aus derselben Vorlage haben verschiedene IDs
+  assert.notEqual(Attributes.fromTemplate(find('risk')).id, risk.id);
+  assert.equal(Attributes.hasTemplate([{ ...risk, name: ' risiko ' }], find('risk')), true);
+  assert.equal(Attributes.hasTemplate([risk], find('maturity')), false);
 });

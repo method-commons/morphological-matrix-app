@@ -302,12 +302,12 @@ export const Ops = (() => {
     }
   }
 
-  /** Stufe löschen; Werte mit dieser Stufe und eine Grenze ab ihr entfallen. @param {Matrix} m @param {string} aid @param {string} levelId */
+  /** Stufe löschen; Werte mit dieser Stufe und eine Grenze ab bzw. unter ihr entfallen. @param {Matrix} m @param {string} aid @param {string} levelId */
   function deleteLevel(m, aid, levelId) {
     const a = m.settings.attributes.find(x => x.id === aid);
     if (!a) return;
     a.levels = a.levels.filter(l => l.id !== levelId);
-    if (a.limit && a.limit.op === 'level' && a.limit.value === levelId) a.limit = null;
+    if (a.limit && (a.limit.op === 'level' || a.limit.op === 'levelBelow') && a.limit.value === levelId) a.limit = null;
     for (const p of m.parameters) for (const o of p.options) if (o.values[aid] === levelId) delete o.values[aid];
   }
 

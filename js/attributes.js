@@ -27,7 +27,7 @@ export const Attributes = (() => {
   const LIMITS = {
     int: ['above', 'below'],
     decimal: ['above', 'below'],
-    choice: ['level'],
+    choice: ['level', 'levelBelow'],
     bool: ['allYes'],
     text: [],
   };
@@ -58,7 +58,7 @@ export const Attributes = (() => {
     const op = raw && raw.op;
     if (!LIMITS[type].includes(op)) return null;
     if (op === 'allYes') return { op };
-    if (op === 'level') {
+    if (op === 'level' || op === 'levelBelow') {
       const level = str(raw.value);
       return levels.some(l => l.id === level) ? { op, value: level } : null;
     }
@@ -174,7 +174,7 @@ export const Attributes = (() => {
     const l = a.limit;
     if (!l) return '';
     if (l.op === 'allYes') return Texts.attributes.limitText.allYes;
-    if (l.op === 'level') return Texts.attributes.limitText.level(levelLabel(a, l.value));
+    if (l.op === 'level' || l.op === 'levelBelow') return Texts.attributes.limitText[l.op](levelLabel(a, l.value));
     return Texts.attributes.limitText[l.op](formatNumber(a, l.value, Number.isInteger(l.value) ? a.decimals : 2));
   }
 
@@ -221,8 +221,10 @@ export const Attributes = (() => {
       const idx = values.map(v => a.levels.findIndex(x => x.id === v)).filter(i => i >= 0);
       if (!idx.length) return { ...base, text: '', sort: null, warn: false };
       const i = a.aggregate === 'min' ? Math.min(...idx) : Math.max(...idx);
-      const at = l && l.op === 'level' ? a.levels.findIndex(x => x.id === l.value) : -1;
-      return { ...base, text: levelLabel(a, a.levels[i].id), sort: i, warn: at >= 0 && idx.some(k => k >= at) };
+      const at = l && (l.op === 'level' || l.op === 'levelBelow') ? a.levels.findIndex(x => x.id === l.value) : -1;
+      // Warnung, sobald eine gewählte Ausprägung ab (bzw. unter) der Grenzstufe liegt
+      const warn = at >= 0 && idx.some(k => (l && l.op === 'levelBelow' ? k < at : k >= at));
+      return { ...base, text: levelLabel(a, a.levels[i].id), sort: i, warn };
     }
     const nums = /** @type {number[]} */ (values);
     if (!nums.length) return { ...base, text: '', sort: null, warn: false };
@@ -273,7 +275,65 @@ export const Attributes = (() => {
     return undefined;
   }
 
+  // ---------- Vorlagen ----------
+
+  /**
+   * Vorlagen für häufige Merkmale, nach Gruppen. Namen, Einheiten und Stufen stehen in den
+   * Sprachdateien (`Texts.attributes.templates[key]`); hier nur Form, Zusammenfassung und Grenze.
+   * Grenzen bei Stufen verweisen auf den Index der Stufe. Weitere Vorlagen: hier und in beiden
+   * Sprachdateien ergänzen.
+   * @type {Array<{ group: string, items: AttributeTemplate[] }>}
+   */
+  const TEMPLATES = [
+    { group: 'tech', items: [
+      { key: 'weight', type: 'decimal', aggregate: 'sum' },
+      { key: 'noise', type: 'int', aggregate: 'max' },
+      { key: 'power', type: 'decimal', aggregate: 'sum' },
+      { key: 'space', type: 'decimal', aggregate: 'sum' },
+    ] },
+    { group: 'project', items: [
+      { key: 'effort', type: 'int', aggregate: 'sum' },
+      { key: 'leadTime', type: 'int', aggregate: 'max' },
+      { key: 'maturity', type: 'choice', aggregate: 'min', limit: { op: 'levelBelow', level: 2 } },
+      { key: 'risk', type: 'choice', aggregate: 'max', limit: { op: 'level', level: 2 } },
+    ] },
+    { group: 'sustainability', items: [
+      { key: 'co2', type: 'decimal', aggregate: 'sum' },
+      { key: 'recyclable', type: 'bool', aggregate: 'count', limit: { op: 'allYes' } },
+      { key: 'repairable', type: 'bool', aggregate: 'count' },
+    ] },
+    { group: 'market', items: [
+      { key: 'novelty', type: 'choice', aggregate: 'max' },
+      { key: 'ipProtected', type: 'bool', aggregate: 'count' },
+      { key: 'suppliers', type: 'int', aggregate: 'min' },
+    ] },
+  ];
+
+  /**
+   * Neues Merkmal aus einer Vorlage, in der aktuellen Sprache (neue IDs; danach frei änderbar).
+   * @param {AttributeTemplate} t @returns {MatrixAttribute}
+   */
+  function fromTemplate(t) {
+    const text = Texts.attributes.templates[t.key];
+    const a = newAttribute(t.type);
+    a.name = text.name;
+    if (isNumeric(t.type)) a.unit = text.unit ?? '';
+    if (t.type === 'choice') a.levels = (text.levels ?? []).map(name => newLevel(name));
+    a.aggregate = t.aggregate;
+    const l = t.limit;
+    if (l && l.op === 'allYes') a.limit = { op: 'allYes' };
+    else if (l && (l.op === 'level' || l.op === 'levelBelow') && a.levels[l.level]) a.limit = { op: l.op, value: a.levels[l.level].id };
+    return a;
+  }
+
+  /** Gibt es schon ein Merkmal mit dem Namen der Vorlage? @param {MatrixAttribute[]} list @param {AttributeTemplate} t */
+  function hasTemplate(list, t) {
+    const name = Texts.attributes.templates[t.key].name.trim().toLocaleLowerCase();
+    return list.some(a => a.name.trim().toLocaleLowerCase() === name);
+  }
+
   return {
+    TEMPLATES, fromTemplate, hasTemplate,
     TYPES, AGGREGATES, LIMITS, isNumeric, newAttribute, newLevel, normalizeAttributes, normalizeValues, normalizeLimit, valueFor,
     label, levelLabel, formatValue, formatNumber, isInvalid, limitText, summarize, sortable, aggregateLabel, shortText, convertValue,
   };

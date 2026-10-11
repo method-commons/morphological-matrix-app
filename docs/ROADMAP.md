@@ -1,6 +1,6 @@
 # Roadmap – Stand und offene Ideen
 
-Stand: Oktober 2026 (nach PR #46). Die Nummern beziehen sich auf die Liste fehlender fachlicher
+Stand: Oktober 2026 (nach PR #50; dazu Vorlagen für Merkmale). Die Nummern beziehen sich auf die Liste fehlender fachlicher
 Funktionen, abgeglichen mit dem Ablauf der morphologischen Methode.
 
 ## Umgesetzt
@@ -20,6 +20,7 @@ Aus der Liste:
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
 | – | Eigene Merkmale | beschreibende Werte je Ausprägung mit Zusammenfassung je Konzept und Grenzen – Datenformat 7 |
+| – | Vorlagen für Merkmale | 14 Vorlagen in vier Gruppen (DE/EN), Grenze „unter Stufe“; weitere Vorlagen folgen |
 
 ## Fertig, aber bewusst nicht übernommen
 
@@ -43,9 +44,13 @@ Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösung
 ## Zurückgestellt (Entscheidung des Maintainers)
 
 - neue Standardbewertungen (über Kosten, Nutzwert, MoSCoW hinaus) – später entscheiden
-- Vorlagen für Merkmal-Definitionen
 - geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups)
 - Immer bzw. Valibot als Bibliotheken
+
+## Ideen für Folgeschritte zu den Vorlagen
+
+- Weitere Vorlagen ergänzen (vom Maintainer angekündigt).
+- Eigene Vorlagen: „Als Vorlage speichern“ an einem Merkmal, gespeichert im Browser und im Backup.
 
 ## Ideen für Folgeschritte zum Lösungsraum
 

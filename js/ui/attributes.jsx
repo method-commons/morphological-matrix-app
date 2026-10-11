@@ -24,6 +24,11 @@ const attrFor = signal(/** @type {string | null} */ (null));
 let keepOpenUntil = 0;
 /** Tabelle geöffnet (nur dann wird sie gezeichnet). */
 const tableOpen = signal(false);
+/** Auswahl „Aus Vorlage …“ aufgeklappt und die darin angekreuzten Vorlagen. */
+const pickerOpen = signal(false);
+const picked = signal(/** @type {Set<string>} */ (new Set()));
+/** Zuletzt aus Vorlagen angelegte Merkmale (kurz hervorgehoben). */
+const fresh = signal(/** @type {Set<string>} */ (new Set()));
 
 /** Ob Merkmale im Popover erfasst werden. @param {Matrix} m */
 export const attributesInPopover = m => m.settings.attributes.length > INLINE_MAX;
@@ -287,6 +292,7 @@ function AttributeTable() {
 // ---------- Definition (Einstellungen) ----------
 
 function addAttribute() {
+  pickerOpen.value = false;
   const a = Attributes.newAttribute('int');
   mutate(m => Ops.addAttribute(m, a));
   editing.value = a.id;
@@ -312,7 +318,11 @@ function changeLimit(a, op) {
   mutate(() => {
     if (op === 'none') a.limit = null;
     else if (op === 'allYes') a.limit = { op: 'allYes' };
-    else if (op === 'level') a.limit = a.levels.length ? { op: 'level', value: a.levels[a.levels.length - 1].id } : null;
+    else if (op === 'level' || op === 'levelBelow') {
+      // Beim Wechsel zwischen „ab“ und „unter“ bleibt die Stufe
+      const prev = a.limit && (a.limit.op === 'level' || a.limit.op === 'levelBelow') ? a.limit.value : null;
+      a.limit = a.levels.length ? { op, value: prev ?? a.levels[a.levels.length - 1].id } : null;
+    }
     else if (op === 'above' || op === 'below') {
       const prev = a.limit && (a.limit.op === 'above' || a.limit.op === 'below') ? a.limit.value : 0;
       a.limit = { op, value: prev };
@@ -336,7 +346,92 @@ export function AttributesEditor() {
       ) : <p class="attr-none">{Texts.attributes.none}</p>}
       <div class="attr-foot">
         <button type="button" class="btn btn-small" id="addAttributeBtn" onClick={addAttribute}><Icon name="plus" /><span>{Texts.attributes.add}</span></button>
+        <button type="button" class="btn btn-small" id="attrTemplateBtn" aria-expanded={pickerOpen.value} aria-controls="attrTemplates" onClick={togglePicker}>
+          {Texts.attributes.fromTemplate}
+        </button>
         {list.length ? <button type="button" class="btn btn-small" id="attrTableBtn" onClick={() => openAttributeTable()}>{Texts.attributes.table}</button> : null}
+      </div>
+      {pickerOpen.value ? <TemplatePicker list={list} /> : null}
+    </div>
+  );
+}
+
+// ---------- Vorlagen ----------
+
+function togglePicker() {
+  pickerOpen.value = !pickerOpen.value;
+  picked.value = new Set();
+  if (pickerOpen.value) {
+    editing.value = null;
+    requestAnimationFrame(() => {
+      const first = /** @type {HTMLElement | null} */ (document.querySelector('#attrTemplates input:not(:disabled)'));
+      if (first) first.focus();
+      document.getElementById('attrTemplates')?.scrollIntoView({ block: 'nearest' });
+    });
+  }
+}
+
+/** Angekreuzte Vorlagen als Merkmale anlegen (in der Reihenfolge der Liste). */
+function applyTemplates() {
+  const chosen = Attributes.TEMPLATES.flatMap(g => g.items).filter(t => picked.value.has(t.key));
+  if (!chosen.length) return;
+  const created = chosen.map(t => Attributes.fromTemplate(t));
+  mutate(m => { for (const a of created) Ops.addAttribute(m, a); });
+  fresh.value = new Set(created.map(a => a.id));
+  pickerOpen.value = false;
+  picked.value = new Set();
+  /** @type {HTMLElement | null} */ (document.getElementById('attrTemplateBtn'))?.focus();
+}
+
+/** Kurzbeschreibung einer Vorlage („Stufen: niedrig · mittel · hoch · je Konzept: höchste Stufe · ⚠ ab Stufe „hoch““). @param {MatrixAttribute} a */
+function templateSummary(a) {
+  if (a.type !== 'choice') return attributeSummary(a);
+  const text = Texts.attributes.summary(Texts.attributes.templateLevels(a.levels.map(l => l.name)), Attributes.aggregateLabel(a));
+  return a.limit ? `${text} · ⚠ ${Attributes.limitText(a)}` : text;
+}
+
+/** Auswahl der Vorlagen, nach Gruppen; vorhandene (gleicher Name) sind ausgegraut. @param {{ list: MatrixAttribute[] }} props */
+function TemplatePicker({ list }) {
+  const n = picked.value.size;
+  /** @param {string} key @param {boolean} on */
+  const toggle = (key, on) => {
+    const next = new Set(picked.value);
+    if (on) next.add(key); else next.delete(key);
+    picked.value = next;
+  };
+  return (
+    <div class="tpl" id="attrTemplates" role="group" aria-labelledby="attrTemplatesHeading">
+      <div class="tpl-head">
+        <b id="attrTemplatesHeading">{Texts.attributes.templateHeading}</b>
+        <small>{Texts.attributes.templateHint}</small>
+      </div>
+      <div class="tpl-groups">
+        {Attributes.TEMPLATES.map(g => (
+          <div key={g.group} class="tpl-group">
+            <h4>{Texts.attributes.templateGroups[/** @type {keyof typeof Texts.attributes.templateGroups} */ (g.group)]}</h4>
+            {g.items.map(t => {
+              const there = Attributes.hasTemplate(list, t);
+              const a = Attributes.fromTemplate(t);
+              return (
+                <label key={t.key} class={`tpl-row${there ? ' is-there' : ''}`} data-template={t.key}>
+                  <input
+                    type="checkbox" disabled={there} checked={!there && picked.value.has(t.key)}
+                    onChange={e => toggle(t.key, /** @type {HTMLInputElement} */ (e.currentTarget).checked)}
+                  />
+                  <span>
+                    <b>{a.name}</b>{there ? <em>{` · ${Texts.attributes.templateExists}`}</em> : null}
+                    <small>{templateSummary(a)}</small>
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div class="tpl-foot">
+        <span aria-live="polite">{Texts.attributes.templateSelected(n)}</span>
+        <button type="button" class="btn btn-small" onClick={togglePicker}>{Texts.attributes.templateCancel}</button>
+        <button type="button" class="btn btn-small btn-primary" id="attrTemplateApply" disabled={!n} onClick={applyTemplates}>{Texts.attributes.templateApply(n)}</button>
       </div>
     </div>
   );
@@ -354,7 +449,7 @@ function AttributeItem({ a, i, count }) {
   const open = editing.value === a.id;
   const name = Attributes.label(a, i);
   return (
-    <li class={`attr-item${open ? ' is-open' : ''}`} data-attr={a.id}>
+    <li class={`attr-item${open ? ' is-open' : ''}${fresh.value.has(a.id) ? ' is-new' : ''}`} data-attr={a.id}>
       <div class="attr-head">
         <button type="button" class="attr-title" aria-expanded={open} title={Texts.attributes.edit(name)} onClick={() => { editing.value = open ? null : a.id; }}>
           <b>{name}</b>
@@ -432,10 +527,10 @@ function AttributeForm({ a, i }) {
               {a.unit.trim() ? <small>{a.unit.trim()}</small> : null}
             </label>
           ) : null}
-          {limit && limit.op === 'level' ? (
+          {limit && (limit.op === 'level' || limit.op === 'levelBelow') ? (
             <label class="attr-limit-value">
               <span class="visually-hidden">{Texts.attributes.limitValue}</span>
-              <select value={limit.value} data-attr-limit={a.id} onChange={e => { const v = value(e); mutate(() => { a.limit = { op: 'level', value: v }; }); }}>
+              <select value={limit.value} data-attr-limit={a.id} onChange={e => { const v = value(e); const op = limit.op; mutate(() => { a.limit = { op, value: v }; }); }}>
                 {a.levels.map(l => <option key={l.id} value={l.id}>{Attributes.levelLabel(a, l.id)}</option>)}
               </select>
             </label>
