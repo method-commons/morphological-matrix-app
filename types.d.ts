@@ -24,8 +24,8 @@ type AttributeValue = number | string | boolean;
 /** Form eines Merkmals: Ganzzahl, Dezimalzahl, Auswahl aus Stufen, Ja/Nein, Text */
 type AttributeType = 'int' | 'decimal' | 'choice' | 'bool' | 'text';
 
-/** Zusammenfassung je Konzept; bei Auswahl `max` = höchste, `min` = niedrigste Stufe */
-type AttributeAggregate = 'sum' | 'min' | 'max' | 'avg' | 'none' | 'count' | 'list';
+/** Zusammenfassung je Konzept; bei Auswahl `max` = höchste, `min` = niedrigste Stufe, `counts` = Anzahl je Stufe */
+type AttributeAggregate = 'sum' | 'min' | 'max' | 'avg' | 'none' | 'count' | 'list' | 'counts';
 
 /** Grenze, ab der der Vergleich warnt (Zahl über/unter einem Wert, ab einer Stufe, nicht alle Ja) */
 type AttributeLimit =

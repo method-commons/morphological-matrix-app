@@ -351,7 +351,7 @@ export const TextsDe = (() => {
       aggregate: 'Je Konzept',
       aggregates: {
         sum: 'Summe', max: 'Maximum', min: 'Minimum', avg: 'Mittelwert', none: 'keine Zusammenfassung',
-        count: 'Anzahl Ja', list: 'Liste', levelMax: 'höchste Stufe', levelMin: 'niedrigste Stufe',
+        count: 'Anzahl Ja', list: 'Liste', levelMax: 'höchste Stufe', levelMin: 'niedrigste Stufe', levelCounts: 'Anzahl je Stufe',
       },
       limit: 'Grenze (optional)',
       limitOps: { none: 'keine', above: 'Warnung über', below: 'Warnung unter', level: 'Warnung ab Stufe', levelBelow: 'Warnung unter Stufe', allYes: 'Warnung, wenn nicht alle Ja' },
@@ -366,7 +366,7 @@ export const TextsDe = (() => {
       templateSelected: n => (n ? `${n} ausgewählt` : 'Vorlagen ankreuzen'),
       templateApply: n => (n === 1 ? '1 Merkmal anlegen' : `${n} Merkmale anlegen`),
       templateCancel: 'Abbrechen',
-      templateGroups: { tech: 'Technik', project: 'Projekt', sustainability: 'Nachhaltigkeit', market: 'Markt & Schutz' },
+      templateGroups: { tech: 'Technik', project: 'Projekt', sustainability: 'Nachhaltigkeit', methods: 'Methoden', market: 'Markt & Schutz' },
       /** @type {Record<string, { name: string, unit?: string, levels?: string[] }>} */
       templates: {
         weight: { name: 'Gewicht', unit: 'kg' },
@@ -380,6 +380,8 @@ export const TextsDe = (() => {
         co2: { name: 'CO₂-Fußabdruck', unit: 'kg CO₂e' },
         recyclable: { name: 'Recyclingfähig' },
         repairable: { name: 'Reparierbar' },
+        kano: { name: 'Kano-Kategorie', levels: ['Rückweisung', 'indifferent', 'Basis', 'Leistung', 'Begeisterung'] },
+        valueEffort: { name: 'Wert/Aufwand', levels: ['Zeitfresser', 'Lückenfüller', 'großes Vorhaben', 'Quick Win'] },
         novelty: { name: 'Neuheitsgrad', levels: ['bekannt', 'angepasst', 'neu'] },
         ipProtected: { name: 'Schutzrecht vorhanden' },
         suppliers: { name: 'Lieferanten' },
@@ -398,6 +400,7 @@ export const TextsDe = (() => {
       yes: 'Ja',
       no: 'Nein',
       unset: '–',
+      levelCount: (n, name) => `${n} × ${name}`,
       yesCount: (yes, n) => `${yes} von ${n} Ja`,
       valueLabel: (attr, option) => `${attr} von ${option}`,
       invalidInt: 'Nur ganze Zahlen',

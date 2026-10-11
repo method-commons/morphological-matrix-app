@@ -18,7 +18,7 @@ export const Attributes = (() => {
   const AGGREGATES = {
     int: ['sum', 'max', 'min', 'avg', 'none'],
     decimal: ['sum', 'max', 'min', 'avg', 'none'],
-    choice: ['max', 'min'],
+    choice: ['max', 'min', 'counts'],
     bool: ['count'],
     text: ['list'],
   };
@@ -224,6 +224,12 @@ export const Attributes = (() => {
       const at = l && (l.op === 'level' || l.op === 'levelBelow') ? a.levels.findIndex(x => x.id === l.value) : -1;
       // Warnung, sobald eine gewählte Ausprägung ab (bzw. unter) der Grenzstufe liegt
       const warn = at >= 0 && idx.some(k => (l && l.op === 'levelBelow' ? k < at : k >= at));
+      if (a.aggregate === 'counts') {
+        // Anzahl je Stufe, höchste zuerst („2 × Quick Win · 1 × Zeitfresser“); ohne Rangfolge, daher nicht sortierbar
+        const text = a.levels.map((x, k) => [k, idx.filter(j => j === k).length]).filter(([, n]) => n).reverse()
+          .map(([k, n]) => Texts.attributes.levelCount(n, levelLabel(a, a.levels[k].id))).join(' · ');
+        return { ...base, text, sort: null, warn };
+      }
       return { ...base, text: levelLabel(a, a.levels[i].id), sort: i, warn };
     }
     const nums = /** @type {number[]} */ (values);
@@ -246,10 +252,12 @@ export const Attributes = (() => {
   }
 
   /** Lässt sich nach dem Merkmal sortieren? @param {MatrixAttribute} a */
-  const sortable = a => a.type === 'choice' || a.type === 'bool' || (isNumeric(a.type) && a.aggregate !== 'none');
+  const sortable = a => (a.type === 'choice' && a.aggregate !== 'counts') || a.type === 'bool' || (isNumeric(a.type) && a.aggregate !== 'none');
 
   /** Bezeichnung der Zusammenfassung („Summe“, „höchste Stufe“ …). @param {MatrixAttribute} a */
-  const aggregateLabel = a => Texts.attributes.aggregates[a.type === 'choice' ? (a.aggregate === 'min' ? 'levelMin' : 'levelMax') : a.aggregate];
+  const aggregateLabel = a => Texts.attributes.aggregates[a.type === 'choice'
+    ? (a.aggregate === 'min' ? 'levelMin' : a.aggregate === 'counts' ? 'levelCounts' : 'levelMax')
+    : /** @type {Exclude<AttributeAggregate, 'counts'>} */ (a.aggregate)];
 
   /**
    * Kurztext der Werte einer Ausprägung für enge Stellen (Kombinieren, Knopf): Zahlen und Stufen,
@@ -301,6 +309,11 @@ export const Attributes = (() => {
       { key: 'co2', type: 'decimal', aggregate: 'sum' },
       { key: 'recyclable', type: 'bool', aggregate: 'count', limit: { op: 'allYes' } },
       { key: 'repairable', type: 'bool', aggregate: 'count' },
+    ] },
+    // Bewertungsmethoden als Stufen; je Konzept die Verteilung
+    { group: 'methods', items: [
+      { key: 'kano', type: 'choice', aggregate: 'counts', limit: { op: 'levelBelow', level: 1 } },
+      { key: 'valueEffort', type: 'choice', aggregate: 'counts', limit: { op: 'levelBelow', level: 1 } },
     ] },
     { group: 'market', items: [
       { key: 'novelty', type: 'choice', aggregate: 'max' },

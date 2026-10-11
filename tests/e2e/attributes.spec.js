@@ -164,3 +164,30 @@ test('Merkmale aus Vorlagen: vorhandene ausgegraut, mehrere auf einmal anlegen, 
   const row = page.locator('#compareTable .attr-row', { hasText: 'Reifegrad' });
   await expect(row.locator('td').first()).toContainText('⚠ unter Stufe „erprobt“');
 });
+
+test('Vorlage „Wert/Aufwand“: Verteilung je Konzept im Vergleich, Warnung bei Zeitfresser', async ({ page }) => {
+  await menu(page, 'settings');
+  await page.click('#attrTemplateBtn');
+  await expect(page.locator('#attrTemplates h4')).toContainText(['Methoden']);
+  await expect(page.locator('[data-template="kano"]')).toContainText('Stufen: Rückweisung · indifferent · Basis · Leistung · Begeisterung · je Konzept: Anzahl je Stufe · ⚠ unter Stufe „indifferent“');
+  await page.locator('[data-template="valueEffort"] input').check();
+  await page.click('#attrTemplateApply');
+  await expect(page.locator('.attr-item', { hasText: 'Wert/Aufwand' })).toContainText('je Konzept: Anzahl je Stufe');
+  await page.click('#settingsDone');
+
+  // Kompakt-Espresso: Thermoblock = Quick Win, Vibrationspumpe = Zeitfresser
+  await page.click('[data-mode="edit"]');
+  const pop = page.locator('#attrPop');
+  await page.locator('.opt-cell.edit[data-oid="p1o3"] [data-attr-btn]').click();
+  await pop.getByLabel('Wert/Aufwand von Thermoblock').selectOption({ label: 'Quick Win' });
+  await page.keyboard.press('Escape');
+  await page.locator('.opt-cell.edit[data-oid="p2o2"] [data-attr-btn]').click();
+  await pop.getByLabel('Wert/Aufwand von Vibrationspumpe').selectOption({ label: 'Zeitfresser' });
+  await page.keyboard.press('Escape');
+  const row = page.locator('#compareTable .attr-row', { hasText: 'Wert/Aufwand' });
+  await expect(row.locator('th')).toHaveText('Wert/Aufwand (Anzahl je Stufe)');
+  await expect(row.locator('td').first()).toContainText('1 × Quick Win · 1 × Zeitfresser');
+  await expect(row.locator('td').first()).toContainText('⚠ unter Stufe „Lückenfüller“');
+  // Nicht sortierbar: kein Eintrag in der Sortierung
+  await expect(page.locator('#compareSort option', { hasText: 'Wert/Aufwand' })).toHaveCount(0);
+});

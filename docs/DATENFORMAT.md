@@ -28,7 +28,7 @@ Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON
         "decimals": 1,         // Nachkommastellen: Dezimalzahl 1–3, sonst 0
         "levels": [],          // nur Auswahl: [{ "id": "l1", "name": "Idee" }, …] in aufsteigender Rangfolge
         "aggregate": "sum",    // je Konzept – Zahlen: "sum" | "max" | "min" | "avg" | "none";
-                               // Auswahl: "max" (höchste Stufe) | "min"; Ja/Nein: "count"; Text: "list"
+                               // Auswahl: "max" (höchste Stufe) | "min" | "counts" (Anzahl je Stufe); Ja/Nein: "count"; Text: "list"
         "limit": { "op": "above", "value": 4 }  // null = keine Grenze; Zahlen: "above" | "below" mit value;
                                // Auswahl: { "op": "level" (ab Stufe) | "levelBelow" (unter Stufe), "value": "<Stufen-ID>" };
                                // Ja/Nein: { "op": "allYes" }
@@ -119,6 +119,7 @@ Beim Wiederherstellen (`IO.parseBackup`, `IO.planRestore`) werden vorhandene Mat
 | 6 | Status je Konzept: `status`, `statusNote` | keine Umwandlung nötig (fehlt der Status, gilt „Entwurf“); die neue Version verhindert, dass ältere App-Versionen den Status verwerfen |
 | 7 | Eigene Merkmale: `settings.attributes`, `values` je Ausprägung | keine Umwandlung nötig; die neue Version verhindert, dass ältere App-Versionen die Merkmale verwerfen |
 |  | später ergänzt (ohne neue Version): Grenze `"levelBelow"` (unter Stufe) bei Auswahl-Merkmalen | ältere App-Versionen kennen sie nicht und setzen die Grenze auf `null`; alles andere bleibt erhalten |
+|  | später ergänzt (ohne neue Version): Zusammenfassung `"counts"` (Anzahl je Stufe) bei Auswahl-Merkmalen | ältere App-Versionen setzen sie auf `"max"` (höchste Stufe) zurück |
 
 ## Eine neue Version einführen
 
