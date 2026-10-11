@@ -1,6 +1,6 @@
 # Roadmap – Stand und offene Ideen
 
-Stand: Oktober 2026 (nach PR #50; dazu Vorlagen für Merkmale). Die Nummern beziehen sich auf die Liste fehlender fachlicher
+Stand: Oktober 2026 (nach PR #55). Die Nummern beziehen sich auf die Liste fehlender fachlicher
 Funktionen, abgeglichen mit dem Ablauf der morphologischen Methode.
 
 ## Umgesetzt
@@ -47,14 +47,6 @@ Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösung
 - geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups)
 - Immer bzw. Valibot als Bibliotheken
 
-## Quelltext und Infrastruktur
-
-Umgesetzt: (A) Veröffentlichung erst nach grüner CI, Browser-Cache in der CI, Mindestabdeckung, Dependabot; (B) Grenzregeln in `js/limits.js` und `Attributes.marksMissing` zusammengeführt, `attributes.jsx` und `render-panels.jsx` aufgeteilt.
-Offen:
-
-- **C:** strengere Typprüfung der Oberfläche (`noImplicitAny`), ggf. mit TypeScript 7; Preact 11 prüfen.
-- **D (optional):** Bundle verkleinern (inaktive Sprache und selten genutzte Dialoge nachladen), E2E-Tests zusätzlich in Handy-Breite.
-
 ## Ideen für Folgeschritte zu den Vorlagen
 
 - Weitere Vorlagen ergänzen.
@@ -66,3 +58,18 @@ Offen:
 
 - In sehr großen Räumen mit mehreren gleichzeitigen Filtern (Kosten bis + Merkmal-Grenzen) reicht das Rechenbudget mitunter nicht; bessere Schranken (z. B. Lagrange-Relaxation) oder ein Abbruch mit „weiter suchen“ wären möglich.
 - Export der Trefferliste (CSV) und Vergleich ausgewählter Treffer ohne sie als Konzept anzulegen.
+
+## Quelltext und Infrastruktur (hinten angestellt)
+
+Umgesetzt: (A) Veröffentlichung erst nach grüner CI, Browser-Cache in der CI, Mindestabdeckung, Dependabot;
+(B) Grenzregeln in `js/limits.js` und `Attributes.marksMissing` zusammengeführt, `attributes.jsx` und
+`render-panels.jsx` aufgeteilt.
+
+Offen, bewusst nach den fachlichen Themen:
+
+- **C – Typen und große Updates:**
+  - strengere Typprüfung der Oberfläche: `noImplicitAny` für `js/ui/` Datei für Datei einschalten (die Logik in `js/*.js` ist schon streng geprüft),
+  - TypeScript 7 (neuer, deutlich schnellerer Compiler) und Preact 11 jeweils einzeln prüfen; Dependabot schlägt große Versionen bewusst nicht vor.
+- **D – optional:**
+  - Bundle verkleinern (Haupt-Bundle 249 kB, gezippt 80 kB): die inaktive Sprache nachladen (rund 10–12 kB gezippt) sowie selten genutzte Teile wie Lösungsraum, Merkmal-Tabelle und Kosten/Nutzen-Diagramm,
+  - E2E-Tests zusätzlich in Handy-Breite (390 px) für einige markierte Tests.
