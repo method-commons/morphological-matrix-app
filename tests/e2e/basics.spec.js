@@ -16,7 +16,7 @@ test('Kennzahl-Kacheln: Detailzeilen ohne Kategorien, Konflikte und Status; glei
   await page.setViewportSize({ width: 390, height: 800 });
   await tabMenu(page, 'Neue leere Matrix');
   // Neue Matrix: ein Parameter mit zwei Ausprägungen, ein Konzept im Entwurf, keine Kategorien
-  await expect(page.locator('.stat-detail')).toHaveText(['bis 2 je Parameter', 'Ø 2 je Parameter', 'keine Unverträglichkeiten', '1 Entwurf']);
+  await expect(page.locator('.stat-detail')).toHaveText(['ohne Kategorien', 'Ø 2 je Parameter', 'keine Unverträglichkeiten', '1 Entwurf']);
   // Schmale Kachel: nur „›“, der Link bleibt per Name erreichbar
   await expect(page.getByRole('button', { name: 'Liste', exact: true })).toBeVisible();
   await expect(page.locator('.stat-link-text')).toBeHidden();

@@ -67,9 +67,8 @@ function Stats() {
   const parts = shown.map(s => [s, state.concepts.filter(c => c.status === s).length])
     .filter(([, n]) => n).map(([s, n]) => Texts.status.count(/** @type {number} */ (n), /** @type {any} */ (s)));
   const statusSummary = parts.length ? Texts.status.summary(parts) : C ? Texts.status.drafts(C) : '';
-  const maxOptions = Math.max(0, ...state.parameters.map(p => p.options.length));
   const paramDetail = !P ? '' : state.categories.length
-    ? Texts.stats.inCategories(state.categories.length) : Texts.stats.maxOptions(maxOptions);
+    ? Texts.stats.inCategories(state.categories.length) : Texts.stats.noCategories;
   const optionDetail = P ? Texts.stats.avgOptions(Util.formatNumber(Math.round(O / P * 10) / 10)) : '';
   const link = P ? (
     <button type="button" class="stat-link" id="solutionsLink" title={Texts.solutions.openTitle} aria-label={Texts.solutions.open} onClick={openSolutions}>
