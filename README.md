@@ -4,7 +4,7 @@ Responsive Web-App zum Erstellen einer morphologischen Matrix (Zwicky-Box). Läu
 
 ## Starten
 
-Die App ist auf GitHub Pages veröffentlicht: <https://schwaen.github.io/morphological-matrix-app/>
+Die App ist auf GitHub Pages veröffentlicht: <https://method-commons.github.io/morphological-matrix-app/>
 
 Lokal (Node.js ≥ 22):
 
