@@ -53,8 +53,9 @@ Chromium ist vorinstalliert; kein `playwright install`.
 
 ## Veröffentlichung
 
-GitHub Pages per Action (`.github/workflows/pages.yml`) bei Push auf `main`; CI (`ci.yml`) führt dieselben
-Schritte wie `npm test` aus. Die öffentliche URL steht in der README und im Skill „morphologische-matrix“
+CI (`.github/workflows/ci.yml`) führt dieselben Schritte wie `npm test` aus und veröffentlicht auf `main`
+danach – nur wenn alles grün ist – auf GitHub Pages. Dependabot schlägt wöchentlich Updates vor; Playwright
+bleibt auf der Version des vorinstallierten Chromium (1.56.1) und wird nur von Hand angehoben. Die öffentliche URL steht in der README und im Skill „morphologische-matrix“
 des Maintainers (Teilen-Links `…/#m=…`); die App selbst nutzt nur relative Pfade (`base: './'`).
 Bei einem Umzug des Repos ändert sich die Pages-URL ohne Weiterleitung – README und Skill anpassen;
 gespeicherte Matrizen hängen am Browser-Ursprung und lassen sich nur per Backup übertragen.
