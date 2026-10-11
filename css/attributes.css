@@ -41,6 +41,33 @@
   .score-table .score-cell { width: 76px; }
   .attr-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
+  /* Merkmale aus Vorlagen: aufklappbare Auswahl unter den Knöpfen */
+  .tpl { margin-top: 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); overflow: hidden; }
+  .tpl-head {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 9px 12px;
+    border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--accent) 5%, var(--surface));
+  }
+  .tpl-head b { font-size: .9rem; white-space: nowrap; }
+  .tpl-head small { color: var(--muted); font-size: .78rem; }
+  .tpl-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .tpl-group { padding: 8px 12px 10px; border-top: 1px solid var(--border); margin-top: -1px; border-left: 1px solid var(--border); margin-left: -1px; }
+  .tpl-group h4 { margin: 2px 0 4px; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .tpl-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 8px; align-items: start; padding: 4px; border-radius: 6px; cursor: pointer; }
+  .tpl-row:hover { background: var(--surface-2); }
+  .tpl-row input { margin: 3px 0 0; }
+  .tpl-row b { font-size: .85rem; font-weight: 600; }
+  .tpl-row em { font-style: normal; font-size: .75rem; color: var(--muted); }
+  .tpl-row small { display: block; color: var(--muted); font-size: .74rem; line-height: 1.35; }
+  .tpl-row.is-there { cursor: default; opacity: .55; }
+  .tpl-row.is-there:hover { background: none; }
+  .tpl-foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 9px 12px; border-top: 1px solid var(--border); }
+  .tpl-foot span { margin-right: auto; color: var(--muted); font-size: .78rem; }
+  /* Gerade aus Vorlagen angelegt: kurz hervorheben */
+  .attr-item.is-new { animation: attr-new 2.4s ease-out; }
+  @keyframes attr-new {
+    0%, 60% { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+  }
+
   /* In der Zelle (Bearbeiten): bis zu zwei Merkmale als Felder, sonst Knopf */
   .opt-attrs { display: grid; gap: 4px; padding: 0 6px 6px 9px; contain: inline-size; }
   .attr-field { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); gap: 4px; align-items: center; }

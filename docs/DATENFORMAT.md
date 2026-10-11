@@ -2,7 +2,7 @@
 
 Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON-Export, Teilen-Links (`#m=…`, Base64url-kodiertes JSON) und die mitgelieferten Beispiele (`data` in `examples/*.json`, siehe [`examples/README.md`](../examples/README.md)). Typdefinitionen für die Entwicklung stehen in [`types.d.ts`](../types.d.ts).
 
-**Aktuelle Version: 6** (`Model.SCHEMA_VERSION` in `js/model.js`)
+**Aktuelle Version: 7** (`Model.SCHEMA_VERSION` in `js/model.js`)
 
 ## Aufbau
 
@@ -30,7 +30,8 @@ Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON
         "aggregate": "sum",    // je Konzept – Zahlen: "sum" | "max" | "min" | "avg" | "none";
                                // Auswahl: "max" (höchste Stufe) | "min"; Ja/Nein: "count"; Text: "list"
         "limit": { "op": "above", "value": 4 }  // null = keine Grenze; Zahlen: "above" | "below" mit value;
-                               // Auswahl: { "op": "level", "value": "<Stufen-ID>" }; Ja/Nein: { "op": "allYes" }
+                               // Auswahl: { "op": "level" (ab Stufe) | "levelBelow" (unter Stufe), "value": "<Stufen-ID>" };
+                               // Ja/Nein: { "op": "allYes" }
       }
     ]
   },
@@ -117,6 +118,7 @@ Beim Wiederherstellen (`IO.parseBackup`, `IO.planRestore`) werden vorhandene Mat
 | 5 | Verträglichkeiten zwischen Ausprägungen: `constraints` | keine Umwandlung nötig; die neue Version verhindert, dass ältere App-Versionen Verträglichkeiten verwerfen |
 | 6 | Status je Konzept: `status`, `statusNote` | keine Umwandlung nötig (fehlt der Status, gilt „Entwurf“); die neue Version verhindert, dass ältere App-Versionen den Status verwerfen |
 | 7 | Eigene Merkmale: `settings.attributes`, `values` je Ausprägung | keine Umwandlung nötig; die neue Version verhindert, dass ältere App-Versionen die Merkmale verwerfen |
+|  | später ergänzt (ohne neue Version): Grenze `"levelBelow"` (unter Stufe) bei Auswahl-Merkmalen | ältere App-Versionen kennen sie nicht und setzen die Grenze auf `null`; alles andere bleibt erhalten |
 
 ## Eine neue Version einführen
 

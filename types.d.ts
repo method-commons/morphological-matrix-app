@@ -31,7 +31,16 @@ type AttributeAggregate = 'sum' | 'min' | 'max' | 'avg' | 'none' | 'count' | 'li
 type AttributeLimit =
   | { op: 'above' | 'below', value: number }
   | { op: 'level', value: string }
+  | { op: 'levelBelow', value: string }
   | { op: 'allYes' };
+
+/** Vorlage für ein Merkmal (Texte in der Sprachdatei); Grenze bei Stufen als Index der Stufe */
+interface AttributeTemplate {
+  key: string;
+  type: AttributeType;
+  aggregate: AttributeAggregate;
+  limit?: { op: 'level' | 'levelBelow', level: number } | { op: 'allYes' };
+}
 
 /** Stufe eines Auswahl-Merkmals (Reihenfolge = Rangfolge) */
 interface AttributeLevel {
