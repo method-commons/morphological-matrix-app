@@ -7,7 +7,7 @@ test('JSON-Export und -Import ergeben dieselbe Matrix', async ({ page }) => {
   await menu(page, 'new');
   await page.setInputFiles('#importFile', exported.path);
   await expect(page.locator('#title')).toHaveValue('Beispiel: Kaffeemaschine');
-  await expect(page.locator('#stats')).toContainText('3.072 mögliche Kombinationen');
+  await expect(page.locator('#stats')).toContainText('3.072 Kombinationen');
 });
 
 test('Import einer ungültigen Datei meldet einen Fehler', async ({ page }, info) => {
