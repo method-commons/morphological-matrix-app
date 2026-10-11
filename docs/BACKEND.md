@@ -1,9 +1,15 @@
 # Backend – Konzept
 
-Stand: Oktober 2026 · **Konzept, noch nicht umgesetzt** · offene Entscheidungen am Ende.
+Stand: Oktober 2026 · **Konzept, noch nicht umgesetzt** · zwei Varianten · offene Entscheidungen am Ende.
 
 Ziel: Die App bleibt öffentlich und **ohne Konto in vollem Umfang** nutzbar. Wer sich registriert,
 bekommt zusätzlich: Matrizen im Backend gespeichert (auf allen Geräten verfügbar) und versioniert.
+
+Zwei Varianten, die denselben Code für Sync und Versionen nutzen:
+
+- **Betriebenes Backend:** Der Maintainer betreibt ein Backend für alle (Abschnitte bis „Grenzen und Risiken“).
+- **Eigenes Backend:** Jede Person bzw. jedes Team bringt ein eigenes Supabase-Projekt mit und trägt
+  dessen Adresse in der App ein ([Abschnitt unten](#variante-eigenes-backend)). **Empfehlung: damit beginnen.**
 
 ## Grundprinzip: lokal zuerst
 
@@ -126,6 +132,69 @@ Das Anmelde-Token im Browser ist technisch notwendig; ein Cookie-Banner sollte d
 - „Geräteübergreifendes Arbeiten / Synchronisation“ war zuvor zurückgestellt; dieses Konzept nimmt
   das Thema wieder auf (siehe [ROADMAP.md](ROADMAP.md)).
 
+## Variante: eigenes Backend
+
+Eine Person oder ein Team legt selbst ein Supabase-Projekt an und trägt es in der App ein. Die App bleibt
+rein statisch; Daten fließen direkt vom Browser zum Projekt der Person, über die Infrastruktur des
+Maintainers läuft nichts.
+
+### Ablauf
+
+1. Konto und Projekt bei Supabase anlegen (kostenlos möglich) – oder Supabase selbst hosten.
+2. In der App unter „Eigenes Backend …“ **Projekt-URL** und **öffentlichen Schlüssel** (anon key)
+   eintragen. Beide sind nicht geheim.
+3. Einmalig die Tabellen einrichten (siehe unten); die App prüft das Ergebnis.
+4. Im eigenen Projekt anmelden; danach Sync und Versionen wie oben beschrieben.
+
+### Einrichtung der Tabellen
+
+Mit dem öffentlichen Schlüssel kann die App **keine Tabellen anlegen** – das darf er absichtlich nicht.
+
+| Weg | Wie | Bewertung |
+|---|---|---|
+| **a) SQL-Skript zum Kopieren** | Die App zeigt das Einrichtungsskript mit „Kopieren“; die Person führt es im SQL-Editor von Supabase aus. Danach prüft die App Tabellen, Zugriffsregeln und Schema-Version. | **empfohlen** – ein Kopiervorgang, nachvollziehbar, kein Geheimnis in der App |
+| b) Service-Schlüssel eingeben | Die App bekommt einmalig den Admin-Schlüssel. | **nicht empfohlen** – umgeht alle Zugriffsregeln; Tabellen anlegen geht damit nicht einmal zuverlässig |
+| c) Verwaltungs-API mit persönlichem Token | Die App ruft die Verwaltungs-API von Supabase auf. | **zu prüfen** – unklar, ob aus dem Browser erreichbar; das Token öffnet *alle* Projekte der Person |
+
+Ein kleiner Assistent in der App führt durch die Schritte und prüft am Ende selbst, ob alles passt.
+
+### Vorteile
+
+- **Kein Betrieb und keine fremden Daten beim Maintainer:** Daten und Kosten liegen beim Konto der
+  Person. Impressum und Datenschutz der App ändern sich voraussichtlich kaum, weil die App selbst nichts
+  speichert (keine Rechtsberatung).
+- **Für Teams und Firmen:** Ein Team legt *ein* Projekt an, alle tragen dieselbe URL ein – Teilen im Team
+  wird später einfacher. Mit selbst gehostetem Supabase verlassen die Daten nie das eigene Netz.
+- **Einladungslink fürs Team:** URL und öffentlicher Schlüssel sind nicht geheim und lassen sich als Link
+  weitergeben; anmelden muss sich jede Person selbst.
+- **Derselbe Code** wie beim betriebenen Backend (Sync, Versionen, Konfliktdialog) – ein später vom
+  Maintainer betriebenes Backend wäre nur ein voreingestellter Eintrag.
+
+### Nachteile und Risiken
+
+- **Hohe Einstiegshürde:** Supabase-Konto, Projekt, Skript – eher für Teams und erfahrene Nutzer.
+  Alle anderen behalten die volle App ohne Konto.
+- **Updates des Backends:** Ändert eine neue App-Version Tabellen oder Regeln, muss jedes fremde
+  Backend nachziehen. Nötig: Schema-Version im Backend, Prüfung beim Verbinden, Hinweis „Update-Skript
+  ausführen“, ältere Backends eine Zeit lang weiter unterstützen. **Größter Daueraufwand dieser Variante.**
+- **Unterstützung:** Fehler entstehen in Projekten ohne Zugriff des Maintainers – klare Fehlermeldungen
+  und eine Prüfseite in der App sind Pflicht.
+- **Pausierte Projekte:** Kostenlose Supabase-Projekte pausieren nach 7 Tagen ohne Nutzung. Die App
+  erkennt das („Projekt pausiert – in Supabase fortsetzen“) und arbeitet so lange lokal weiter.
+- **E-Mail-Versand:** Der eingebaute Versand von Supabase ist stark begrenzt; für Teams eigener
+  Mail-Anbieter oder Anmeldung per Passwort.
+- **Content Security Policy:** muss Verbindungen zu beliebigen HTTPS-Adressen erlauben (selbst gehostete
+  Backends liegen irgendwo) – schwächt sie etwas.
+- **Bundle:** Die Supabase-Bibliothek ist nicht klein; nur nachladen, wenn ein Backend eingerichtet ist.
+
+### Stufen dieser Variante
+
+| Stufe | Inhalt | Aufwand |
+|---|---|---|
+| 1 | Backend eintragen, Einrichtungsassistent mit SQL-Skript und Prüfung, Anmeldung, Sync mit Konfliktdialog | groß |
+| 2 | Versionen (automatisch und benannt, Wiederherstellen), Einladungslink fürs Team | mittel |
+| 3 | Update-Skripte für neue Schema-Versionen, Versionen vergleichen (Roadmap 8) | mittel |
+
 ## Offene Entscheidungen
 
 1. **Anbieter:** Supabase (EU), PocketBase selbst gehostet oder Cloudflare? – Empfehlung: **Supabase (EU)**.
@@ -135,6 +204,14 @@ Das Anmelde-Token im Browser ist technisch notwendig; ein Cookie-Banner sollte d
 5. **Ort des Backends:** Empfehlung: **dasselbe Repo, Ordner `backend/`**.
 6. **Rechtliches:** Impressum und Datenschutzerklärung vor dem Freischalten – Sache des Maintainers;
    Entwürfe können vorbereitet werden.
+
+Zur Variante „eigenes Backend“:
+
+7. **Mit dieser Variante beginnen?** – Empfehlung: **ja**; ein betriebenes Backend erst bei Nachfrage.
+8. **Einrichtung:** Empfehlung: **SQL-Skript zum Kopieren mit Prüfung durch die App**; kein Admin-Schlüssel in der App.
+9. **Anbieter:** Empfehlung: **zunächst nur Supabase** (auch selbst gehostet).
+10. **Einladungslink fürs Team** (URL und öffentlicher Schlüssel): Empfehlung: **ja, ab Stufe 2**.
+11. **Anmeldung:** Empfehlung: **Anmeldelink per E-Mail und alternativ Passwort**, weil der eingebaute E-Mail-Versand begrenzt ist.
 
 Nächster Schritt nach den Entscheidungen: Mockups in der echten App (Konto im Menü, Statusanzeige,
 Versionen-Dialog), umsetzen erst nach „Ja“.
