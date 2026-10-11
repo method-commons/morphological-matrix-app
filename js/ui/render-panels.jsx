@@ -40,9 +40,19 @@ export function formatCount(n) {
 
 // ---------- Kennzahlen ----------
 
-/** @param {{ value: string, label: string, title?: string | null, children?: any }} props */
-function Stat({ value, label, title = null, children }) {
-  return <span class="stat" title={title ?? undefined}>{children}<strong>{value}</strong>{` ${label}`}</span>;
+/**
+ * Kachel mit fester Form: Bezeichnung (oben, rechts daneben ggf. ein Link), Zahl, eine Detailzeile.
+ * Im DOM steht die Zahl vorn („6 Parameter“), die Anordnung übernimmt das CSS-Raster.
+ * @param {{ value: string, label: string, title?: string | null, link?: any, children?: any }} props
+ */
+function Stat({ value, label, title = null, link = null, children }) {
+  return (
+    <div class="stat" title={title ?? undefined}>
+      <strong>{value}</strong>{' '}<span class="stat-label">{label}</span>
+      {link}
+      {' '}{children ?? <span class="stat-detail" />}
+    </div>
+  );
 }
 
 function Stats() {
@@ -56,33 +66,56 @@ function Stats() {
   const shown = ['chosen', 'favorite', 'dropped'];
   const parts = shown.map(s => [s, state.concepts.filter(c => c.status === s).length])
     .filter(([, n]) => n).map(([s, n]) => Texts.status.count(/** @type {number} */ (n), /** @type {any} */ (s)));
-  const statusSummary = parts.length ? Texts.status.summary(parts) : '';
+  const statusSummary = parts.length ? Texts.status.summary(parts) : C ? Texts.status.drafts(C) : '';
+  const maxOptions = Math.max(0, ...state.parameters.map(p => p.options.length));
+  const paramDetail = !P ? '' : state.categories.length
+    ? Texts.stats.inCategories(state.categories.length) : Texts.stats.maxOptions(maxOptions);
+  const optionDetail = P ? Texts.stats.avgOptions(Util.formatNumber(Math.round(O / P * 10) / 10)) : '';
+  const link = P ? (
+    <button type="button" class="stat-link" id="solutionsLink" title={Texts.solutions.openTitle} aria-label={Texts.solutions.open} onClick={openSolutions}>
+      <span class="stat-link-text">{Texts.solutions.open}</span><span aria-hidden="true">›</span>
+    </button>
+  ) : null;
   return (
     <>
-      <Stat value={Util.formatInteger(P)} label={Texts.stats.parameters} />
-      <Stat value={Util.formatInteger(O)} label={Texts.stats.options(O)} />
-      <Stat value={count.text} label={Texts.stats.combinations(combos === 1n)} title={count.title}>
-        {/* Spaltenrichtung umgekehrt: zuerst genannt steht ganz unten */}
-        {P ? <button type="button" class="stat-link" id="solutionsLink" title={Texts.solutions.openTitle} onClick={openSolutions}>{Texts.solutions.open}</button> : null}
-        {state.constraints.some(x => x.type === 'excluded') ? <ConsistentCount /> : null}
+      <Stat value={Util.formatInteger(P)} label={Texts.stats.parameters}>
+        <span class="stat-detail">{paramDetail}</span>
+      </Stat>
+      <Stat value={Util.formatInteger(O)} label={Texts.stats.options(O)}>
+        <span class="stat-detail">{optionDetail}</span>
+      </Stat>
+      <Stat value={count.text} label={Texts.stats.combinations(combos === 1n)} title={count.title} link={link}>
+        {!P ? null : state.constraints.some(x => x.type === 'excluded') ? <ConsistentCount />
+          : <span class="stat-detail">{Texts.stats.noExclusions}</span>}
       </Stat>
       <Stat value={Util.formatInteger(C)} label={Texts.stats.concepts(C)}>
-        {statusSummary ? <span class="stat-note">{statusSummary}</span> : null}
+        <span class="stat-detail stat-note">{statusSummary}</span>
       </Stat>
     </>
   );
 }
 
-/** Anteil der widerspruchsfreien Kombinationen (gezählt im Web Worker; bis dahin der letzte Wert). */
+/**
+ * Anteil der widerspruchsfreien Kombinationen (gezählt im Web Worker; bis dahin der letzte Wert).
+ * Beim Kombinieren mit teilweise gefülltem Konzept: „noch 584 von 1.888“; der volle Text steht im Tooltip.
+ */
 function ConsistentCount() {
   useMatrix();
   const { value: ok, pending } = consistentCount(state);
   const okText = ok === undefined ? '…' : ok == null ? Texts.cons.notCountable : formatCount(ok).text;
   const left = conceptRest(activeConcept());
+  const leftText = left == null ? '' : formatCount(left).text;
+  const exact = ok == null ? null : formatCount(ok).title;
+  const full = [Texts.cons.consistentCount(okText), leftText ? Texts.cons.restStat(leftText) : '', exact ?? '']
+    .filter(Boolean).join(' · ');
   return (
-    <span class="stat-sub" title={ok == null ? undefined : formatCount(ok).title ?? undefined} aria-busy={pending || undefined}>
-      {Texts.cons.consistentCount(okText)}
-      {left != null ? <>{' · '}<span class="stat-rest">{Texts.cons.restStat(formatCount(left).text)}</span></> : null}
+    <span class="stat-detail" title={full} aria-busy={pending || undefined}>
+      {left == null
+        ? <span class="stat-sub">{Texts.cons.consistentShort(okText)}</span>
+        : <>
+          <span class="stat-rest">{Texts.cons.restShort(leftText)}</span>
+          {ok === null ? null : <>{' '}<span class="stat-sub">{Texts.cons.restOf(okText)}</span></>}
+        </>}
     </span>
   );
 }

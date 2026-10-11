@@ -214,7 +214,12 @@ export const TextsDe = (() => {
       /** @returns {string} */
       options: n => (n === 1 ? 'Ausprägung' : 'Ausprägungen'),
       /** @returns {string} */
-      combinations: one => (one ? 'mögliche Kombination' : 'mögliche Kombinationen'),
+      combinations: one => (one ? 'Kombination' : 'Kombinationen'),
+      // Detailzeilen der Kacheln
+      inCategories: n => `in ${n} ${n === 1 ? 'Kategorie' : 'Kategorien'}`,
+      maxOptions: n => `bis ${n} je Parameter`,
+      avgOptions: value => `Ø ${value} je Parameter`,
+      noExclusions: 'keine Unverträglichkeiten',
       /** Zahlwörter für sehr große Anzahlen (lange Skala), Schlüssel = Zehnerpotenz */
       bigUnits: {
         12: 'Billionen', 15: 'Billiarden', 18: 'Trillionen', 21: 'Trilliarden',
@@ -290,7 +295,7 @@ export const TextsDe = (() => {
     // Lösungsraum: alle widerspruchsfreien Kombinationen als Liste
     solutions: {
       heading: 'Lösungsraum',
-      open: 'Liste …',
+      open: 'Liste',
       openTitle: 'Alle widerspruchsfreien Kombinationen als Liste – filtern, sortieren, als Konzept übernehmen',
       button: 'Lösungsraum …',
       hint: 'Alle widerspruchsfreien Kombinationen der Matrix. Mit Filtern eingrenzen, sortieren und eine Kombination als Konzept übernehmen. Ein Klick auf eine Zelle legt die Ausprägung fest.',
@@ -442,6 +447,7 @@ export const TextsDe = (() => {
       noteLabel: name => `Grund zum Status von „${name}“`,
       summary: parts => parts.join(' · '),
       count: (n, key) => `${n} ${{ favorite: n === 1 ? 'Favorit' : 'Favoriten', dropped: 'verworfen', chosen: 'gewählt' }[key]}`,
+      drafts: n => `${n} ${n === 1 ? 'Entwurf' : 'Entwürfe'}`,
       hideDropped: 'Verworfene ausblenden',
       compareRow: 'Status',
     },
@@ -491,6 +497,10 @@ export const TextsDe = (() => {
       restDead: 'Passt zur Auswahl, führt aber zu keiner widerspruchsfreien Lösung mehr',
       restLegend: 'Zahl an einer Ausprägung: widerspruchsfreie Lösungen, wenn sie gewählt wird · ∅: führt zu keiner Lösung mehr.',
       restStat: text => `mit Auswahl: noch ${text}`,
+      // Kurzform in der Kachel: „1.888 widerspruchsfrei“ bzw. „noch 584 von 1.888“
+      consistentShort: text => `${text} widerspruchsfrei`,
+      restShort: text => `noch ${text}`,
+      restOf: text => `von ${text}`,
       restConcept: (text, one) => `noch ${text} widerspruchsfreie ${one ? 'Lösung' : 'Lösungen'} möglich`,
       notCountable: 'nicht berechenbar',
       compareRow: 'Verträglichkeit',

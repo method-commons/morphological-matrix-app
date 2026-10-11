@@ -13,7 +13,10 @@ test('Restzahlen beim Kombinieren: je Ausprägung, in der Kennzahl und am Konzep
   // Direkt unverträgliche Ausprägungen sind durchgestrichen und tragen keine Zahl
   await expect(cell(page, 'p1o1')).toHaveClass(/is-blocked/);
   await expect(cell(page, 'p1o1').locator('.rest')).toHaveCount(0);
-  await expect(page.locator('.stat-rest')).toHaveText('mit Auswahl: noch 88');
+  // Kachel „Kombinationen“: kurz „noch 88 von 1.888“, voller Text im Tooltip
+  await expect(page.locator('.stat-rest')).toHaveText('noch 88');
+  await expect(page.locator('.stat-rest + .stat-sub')).toHaveText('von 1.888');
+  await expect(page.locator('.stat-rest').locator('..')).toHaveAttribute('title', 'davon widerspruchsfrei: 1.888 · mit Auswahl: noch 88');
   await expect(page.locator('.concept.is-active .concept-rest')).toHaveText('noch 88 widerspruchsfreie Lösungen möglich');
   await expect(page.locator('#hint')).toContainText('Zahl an einer Ausprägung');
   // Vollständiges Konzept: keine Restzahlen (die Markierung sagt bereits alles)

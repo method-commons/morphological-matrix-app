@@ -1,11 +1,27 @@
-import { test, expect, menu } from './fixtures.js';
+import { test, expect, menu, tabMenu } from './fixtures.js';
 
 test('Beispiel wird geladen und zeigt Kennzahlen', async ({ page }) => {
   await expect(page.locator('#title')).toHaveValue('Beispiel: Kaffeemaschine');
   await expect(page.locator('#stats')).toContainText('6 Parameter');
   await expect(page.locator('#stats')).toContainText('23 Ausprägungen');
-  await expect(page.locator('#stats')).toContainText('3.072 mögliche Kombinationen');
+  await expect(page.locator('#stats')).toContainText('3.072 Kombinationen');
   await expect(page.locator('.concept')).toHaveCount(3);
+  // Jede Kachel hat genau eine Detailzeile; alle Kacheln sind gleich hoch
+  await expect(page.locator('.stat-detail')).toHaveText(['in 2 Kategorien', 'Ø 3,8 je Parameter', '1.888 widerspruchsfrei', '1 Favorit · 1 verworfen']);
+  const heights = await page.locator('.stat').evaluateAll(els => els.map(el => el.getBoundingClientRect().height));
+  expect(new Set(heights).size).toBe(1);
+});
+
+test('Kennzahl-Kacheln: Detailzeilen ohne Kategorien, Konflikte und Status; gleich hoch auch schmal', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await tabMenu(page, 'Neue leere Matrix');
+  // Neue Matrix: ein Parameter mit zwei Ausprägungen, ein Konzept im Entwurf, keine Kategorien
+  await expect(page.locator('.stat-detail')).toHaveText(['bis 2 je Parameter', 'Ø 2 je Parameter', 'keine Unverträglichkeiten', '1 Entwurf']);
+  // Schmale Kachel: nur „›“, der Link bleibt per Name erreichbar
+  await expect(page.getByRole('button', { name: 'Liste', exact: true })).toBeVisible();
+  await expect(page.locator('.stat-link-text')).toBeHidden();
+  const heights = await page.locator('.stat').evaluateAll(els => els.map(el => el.getBoundingClientRect().height));
+  expect(new Set(heights).size).toBe(1);
 });
 
 test('Ausprägung im Modus „Kombinieren“ an- und abwählen', async ({ page }) => {

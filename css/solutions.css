@@ -1,10 +1,12 @@
 /* Lösungsraum: Dialog mit allen widerspruchsfreien Kombinationen */
 @layer areas {
   .stat-link {
-    align-self: flex-start; margin-top: 2px; padding: 0; border: 0; background: none;
+    grid-area: link; align-self: start; display: inline-flex; gap: 3px; padding: 0; border: 0; background: none;
     color: var(--accent); font: inherit; font-size: .75rem; font-weight: 650; cursor: pointer;
-    text-decoration: underline; text-underline-offset: 2px;
   }
+  .stat-link:hover .stat-link-text { text-decoration: underline; text-underline-offset: 2px; }
+  /* Schmale Kachel (Handy): nur „›“ */
+  @container (max-width: 190px) { .stat-link-text { display: none; } }
   .dialog.ls-dialog { width: min(1460px, calc(100vw - 24px)); max-width: none; }
   .ls-bar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 8px 0; font-size: .85rem; }
   .ls-lbl { color: var(--muted); font-size: .8rem; font-weight: 400; }

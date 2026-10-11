@@ -38,16 +38,25 @@
   .description:hover { border-bottom-color: var(--border-strong); }
   .description:focus { outline: none; border-bottom-color: var(--accent); }
 
-  /* Kennzahlen als Kacheln */
+  /* Kennzahlen als Kacheln: feste Form aus Bezeichnung (+ Link), Zahl und genau einer Detailzeile */
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .stat {
-    display: flex; flex-direction: column-reverse; gap: 0; min-width: 0;
-    padding: 8px 12px;
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "label link" "value value" "detail detail";
+    align-content: start; column-gap: 8px; min-width: 0;
+    padding: 9px 12px;
     border: 1px solid var(--border); border-radius: 10px;
     background: var(--surface); box-shadow: var(--shadow-xs);
     font-size: .75rem; color: var(--muted);
+    container-type: inline-size;
+  }
+  .stat-label { grid-area: label; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stat-detail {
+    grid-area: detail; min-width: 0; min-height: 1.4em; line-height: 1.4;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600;
   }
   .stat strong {
+    grid-area: value;
     font-size: 1.15rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.25;
     color: var(--text); font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
   }

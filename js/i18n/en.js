@@ -205,7 +205,12 @@ export const TextsEn = (() => {
     stats: {
       parameters: 'Parameters',
       options: n => (n === 1 ? 'Option' : 'Options'),
-      combinations: one => (one ? 'Possible combination' : 'Possible combinations'),
+      combinations: one => (one ? 'Combination' : 'Combinations'),
+      // Detail lines of the tiles
+      inCategories: n => `in ${n} ${n === 1 ? 'category' : 'categories'}`,
+      maxOptions: n => `up to ${n} per parameter`,
+      avgOptions: value => `Ø ${value} per parameter`,
+      noExclusions: 'no incompatibilities',
       /** Number words for very large counts (short scale), key = power of ten */
       bigUnits: {
         12: 'trillion', 15: 'quadrillion', 18: 'quintillion', 21: 'sextillion',
@@ -280,7 +285,7 @@ export const TextsEn = (() => {
     // Solution space: all consistent combinations as a list
     solutions: {
       heading: 'Solution space',
-      open: 'List …',
+      open: 'List',
       openTitle: 'All consistent combinations as a list – filter, sort, take over as concept',
       button: 'Solution space …',
       hint: 'All consistent combinations of the matrix. Narrow them down with filters, sort them and take a combination over as a concept. Clicking a cell fixes that option.',
@@ -432,6 +437,7 @@ export const TextsEn = (() => {
       noteLabel: name => `Reason for the status of “${name}”`,
       summary: parts => parts.join(' · '),
       count: (n, key) => `${n} ${{ favorite: n === 1 ? 'favorite' : 'favorites', dropped: 'dropped', chosen: 'chosen' }[key]}`,
+      drafts: n => `${n} ${n === 1 ? 'draft' : 'drafts'}`,
       hideDropped: 'Hide dropped',
       compareRow: 'Status',
     },
@@ -480,6 +486,10 @@ export const TextsEn = (() => {
       restDead: 'Fits the selection but no longer leads to any consistent solution',
       restLegend: 'Number on an option: consistent solutions if it is selected · ∅: no longer leads to any solution.',
       restStat: text => `with selection: ${text} left`,
+      // Short form in the tile: "1,888 consistent" or "584 left of 1,888"
+      consistentShort: text => `${text} consistent`,
+      restShort: text => `${text} left`,
+      restOf: text => `of ${text}`,
       restConcept: (text, one) => `${text} consistent ${one ? 'solution' : 'solutions'} still possible`,
       notCountable: 'not computable',
       compareRow: 'Compatibility',
