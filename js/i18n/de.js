@@ -217,7 +217,7 @@ export const TextsDe = (() => {
       combinations: one => (one ? 'Kombination' : 'Kombinationen'),
       // Detailzeilen der Kacheln
       inCategories: n => `in ${n} ${n === 1 ? 'Kategorie' : 'Kategorien'}`,
-      maxOptions: n => `bis ${n} je Parameter`,
+      noCategories: 'ohne Kategorien',
       avgOptions: value => `Ø ${value} je Parameter`,
       noExclusions: 'keine Unverträglichkeiten',
       /** Zahlwörter für sehr große Anzahlen (lange Skala), Schlüssel = Zehnerpotenz */

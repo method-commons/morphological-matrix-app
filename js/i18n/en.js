@@ -208,7 +208,7 @@ export const TextsEn = (() => {
       combinations: one => (one ? 'Combination' : 'Combinations'),
       // Detail lines of the tiles
       inCategories: n => `in ${n} ${n === 1 ? 'category' : 'categories'}`,
-      maxOptions: n => `up to ${n} per parameter`,
+      noCategories: 'no categories',
       avgOptions: value => `Ø ${value} per parameter`,
       noExclusions: 'no incompatibilities',
       /** Number words for very large counts (short scale), key = power of ten */
