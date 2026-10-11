@@ -20,7 +20,7 @@ Aus der Liste:
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
 | – | Eigene Merkmale | beschreibende Werte je Ausprägung mit Zusammenfassung je Konzept und Grenzen – Datenformat 7 |
-| – | Vorlagen für Merkmale | 14 Vorlagen in vier Gruppen (DE/EN), Grenze „unter Stufe“; weitere Vorlagen folgen |
+| – | Vorlagen für Merkmale | 16 Vorlagen in fünf Gruppen (DE/EN), darunter Kano-Kategorie und Wert/Aufwand; Grenze „unter Stufe“ und Zusammenfassung „Anzahl je Stufe“ |
 
 ## Fertig, aber bewusst nicht übernommen
 
@@ -49,7 +49,9 @@ Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösung
 
 ## Ideen für Folgeschritte zu den Vorlagen
 
-- Weitere Vorlagen ergänzen (vom Maintainer angekündigt).
+- Weitere Vorlagen ergänzen.
+- Erlaubter Bereich (min/max) für Zahlen-Merkmale, z. B. für Punkte-Skalen.
+- Diagramm mit frei wählbaren Achsen und Quadranten (Wert vs. Aufwand als Grafik) – vorerst nicht nötig, die Stufen-Vorlage deckt den Bedarf.
 - Eigene Vorlagen: „Als Vorlage speichern“ an einem Merkmal, gespeichert im Browser und im Backup.
 
 ## Ideen für Folgeschritte zum Lösungsraum

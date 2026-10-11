@@ -86,6 +86,9 @@ test('Grenzen der Merkmale: entspricht der Warnung im Vergleich', () => {
   const below = Solutions.search(m, q).matched;
   assert.equal(below, brute(m, q).length, 'unter Stufe');
   assert.ok(below > 0);
+  // Anzahl je Stufe: keine Schranke über die Zusammenfassung, die Grenze je Wert gilt weiter
+  m.settings.attributes.find(a => a.id === 'r').aggregate = 'counts';
+  assert.equal(Solutions.search(m, q).matched, below, 'Anzahl je Stufe');
 });
 
 for (const sort of ['utility', 'cost', 'priceValue', 'attr:gew:asc', 'attr:gew:desc', 'attr:db:asc']) {

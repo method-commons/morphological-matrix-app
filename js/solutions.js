@@ -87,7 +87,7 @@ export const Solutions = (() => {
       /** @type {Measure['agg'] | null} */
       let agg = null;
       if (a.type === 'int' || a.type === 'decimal') agg = a.aggregate === 'none' ? null : /** @type {Measure['agg']} */ (a.aggregate);
-      else if (a.type === 'choice') agg = a.aggregate === 'min' ? 'min' : 'max';
+      else if (a.type === 'choice') agg = a.aggregate === 'counts' ? null : a.aggregate === 'min' ? 'min' : 'max';
       else if (a.type === 'bool') agg = 'sum';
       return { a, relevant, measure: agg ? /** @type {Measure} */ ({ agg, vals }) : null, vals };
     });

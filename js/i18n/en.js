@@ -341,7 +341,7 @@ export const TextsEn = (() => {
       aggregate: 'Per concept',
       aggregates: {
         sum: 'Sum', max: 'Maximum', min: 'Minimum', avg: 'Average', none: 'no summary',
-        count: 'Number of yes', list: 'List', levelMax: 'highest level', levelMin: 'lowest level',
+        count: 'Number of yes', list: 'List', levelMax: 'highest level', levelMin: 'lowest level', levelCounts: 'Count per level',
       },
       limit: 'Limit (optional)',
       limitOps: { none: 'none', above: 'Warn above', below: 'Warn below', level: 'Warn from level', levelBelow: 'Warn below level', allYes: 'Warn if not all yes' },
@@ -356,7 +356,7 @@ export const TextsEn = (() => {
       templateSelected: n => (n ? `${n} selected` : 'Tick templates'),
       templateApply: n => (n === 1 ? 'Add 1 attribute' : `Add ${n} attributes`),
       templateCancel: 'Cancel',
-      templateGroups: { tech: 'Engineering', project: 'Project', sustainability: 'Sustainability', market: 'Market & IP' },
+      templateGroups: { tech: 'Engineering', project: 'Project', sustainability: 'Sustainability', methods: 'Methods', market: 'Market & IP' },
       /** @type {Record<string, { name: string, unit?: string, levels?: string[] }>} */
       templates: {
         weight: { name: 'Weight', unit: 'kg' },
@@ -370,6 +370,8 @@ export const TextsEn = (() => {
         co2: { name: 'Carbon footprint', unit: 'kg CO₂e' },
         recyclable: { name: 'Recyclable' },
         repairable: { name: 'Repairable' },
+        kano: { name: 'Kano category', levels: ['reverse', 'indifferent', 'must-be', 'performance', 'attractive'] },
+        valueEffort: { name: 'Value/effort', levels: ['money pit', 'fill-in', 'big bet', 'quick win'] },
         novelty: { name: 'Novelty', levels: ['known', 'adapted', 'new'] },
         ipProtected: { name: 'IP protected' },
         suppliers: { name: 'Suppliers' },
@@ -388,6 +390,7 @@ export const TextsEn = (() => {
       yes: 'Yes',
       no: 'No',
       unset: '–',
+      levelCount: (n, name) => `${n} × ${name}`,
       yesCount: (yes, n) => `${yes} of ${n} yes`,
       valueLabel: (attr, option) => `${attr} of ${option}`,
       invalidInt: 'Whole numbers only',

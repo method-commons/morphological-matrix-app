@@ -190,3 +190,35 @@ test('Vorlagen: Reifegrad und Risiko vorbelegt; vorhandene Namen werden erkannt'
   assert.equal(Attributes.hasTemplate([{ ...risk, name: ' risiko ' }], find('risk')), true);
   assert.equal(Attributes.hasTemplate([risk], find('maturity')), false);
 });
+
+test('Zusammenfassung „Anzahl je Stufe“: Verteilung, höchste Stufe zuerst; nicht sortierbar; Grenze greift', () => {
+  const m = matrix([
+    { id: 'w', name: 'Wert/Aufwand', type: 'choice', aggregate: 'counts', levels: [{ id: 'l1', name: 'Zeitfresser' }, { id: 'l2', name: 'Lückenfüller' }, { id: 'l3', name: 'großes Vorhaben' }, { id: 'l4', name: 'Quick Win' }], limit: { op: 'levelBelow', value: 'l2' } },
+  ], { a1: { w: 'l4' }, b1: { w: 'l4' }, a2: { w: 'l1' }, b2: { w: 'l3' } });
+  const [w] = m.settings.attributes;
+  assert.equal(w.aggregate, 'counts');
+  assert.equal(Attributes.aggregateLabel(w), 'Anzahl je Stufe');
+  const s1 = Attributes.summarize(m, w, m.concepts[0]);
+  assert.equal(s1.text, '2 × Quick Win');
+  assert.equal(s1.sort, null);
+  assert.equal(s1.warn, false);
+  const s2 = Attributes.summarize(m, w, m.concepts[1]);
+  assert.equal(s2.text, '1 × großes Vorhaben · 1 × Zeitfresser');
+  assert.equal(s2.warn, true);
+  assert.equal(Attributes.sortable(w), false);
+  // Bei Zahlen ist „counts“ keine gültige Zusammenfassung
+  const n = matrix([{ id: 'x', type: 'int', aggregate: 'counts' }]);
+  assert.equal(n.settings.attributes[0].aggregate, 'sum');
+});
+
+test('Vorlagen der Gruppe „Methoden“: Kano und Wert/Aufwand mit Verteilung und Warnung', () => {
+  const find = key => Attributes.TEMPLATES.flatMap(g => g.items).find(t => t.key === key);
+  const kano = Attributes.fromTemplate(find('kano'));
+  assert.deepEqual(kano.levels.map(l => l.name), ['Rückweisung', 'indifferent', 'Basis', 'Leistung', 'Begeisterung']);
+  assert.equal(kano.aggregate, 'counts');
+  assert.equal(Attributes.limitText(kano), 'unter Stufe „indifferent“');
+  const ve = Attributes.fromTemplate(find('valueEffort'));
+  assert.deepEqual(ve.levels.map(l => l.name), ['Zeitfresser', 'Lückenfüller', 'großes Vorhaben', 'Quick Win']);
+  assert.equal(Attributes.limitText(ve), 'unter Stufe „Lückenfüller“');
+  assert.ok(Attributes.TEMPLATES.find(g => g.group === 'methods').items.length === 2);
+});
