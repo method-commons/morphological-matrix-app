@@ -24,6 +24,8 @@ export default defineConfig({
       include: ['js/*.js'],
       exclude: ['js/count-worker.js'],
       reporter: ['text'],
+      // Mindestabdeckung (aktuell rund 98 / 88 / 98 / 99 %); ein Rückgang lässt `npm test` scheitern
+      thresholds: { statements: 95, branches: 85, functions: 95, lines: 95 },
     },
   },
 });
