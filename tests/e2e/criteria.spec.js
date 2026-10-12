@@ -53,8 +53,12 @@ test('Kriterien: Gewichte, Bewertung im Popover mit Enter-Navigation, Vergleich 
 test('Bewertungstabelle: Werte aller Ausprägungen, ↓/Enter springen eine Zeile weiter', async ({ page }) => {
   await setupCriteria(page, ['Geschmack', 'Komfort']);
   await page.click('#scoreTableBtn');
-  const dialog = page.locator('#scoreDialog');
+  const dialog = page.locator('#valueDialog');
   await expect(dialog).toBeVisible();
+  // Das Beispiel hat zwei Merkmale: Reiter sichtbar, „Nutzwert“ gewählt
+  await expect(page.locator('#valueHeading')).toHaveText('Werte aller Ausprägungen');
+  await expect(dialog.getByRole('tab')).toHaveText(['Nutzwert2 Kriterien', 'Eigene Merkmale2']);
+  await expect(dialog.getByRole('tab', { name: /Nutzwert/ })).toHaveAttribute('aria-selected', 'true');
   await expect(dialog.locator('input[data-r="0"][data-c="0"]')).toBeFocused();
   await page.keyboard.type('4');
   await page.keyboard.press('Enter');
@@ -64,7 +68,13 @@ test('Bewertungstabelle: Werte aller Ausprägungen, ↓/Enter springen eine Zeil
   await page.keyboard.press('Tab');
   await page.keyboard.type('8');
   await expect(dialog.locator('tbody tr').nth(1).locator('td.num')).toHaveText('6'); // (4 + 8) / 2
-  await page.click('#scoreDone');
+  // Reiter wechseln: Merkmal-Tabelle, Fokus im ersten Feld; zurück zum Nutzwert
+  await dialog.getByRole('tab', { name: /Eigene Merkmale/ }).click();
+  await expect(dialog.locator('.attr-table')).toBeVisible();
+  await expect(dialog.locator('[data-r="0"][data-c="0"]')).toBeFocused();
+  await dialog.getByRole('tab', { name: /Nutzwert/ }).click();
+  await expect(dialog.locator('input[data-r="0"][data-c="0"]')).toHaveValue('4');
+  await page.click('#valueDone');
   await page.click('#settingsDone');
   await page.click('[data-mode="edit"]');
   await expect(page.locator('[data-score-btn="p1o1"]')).toContainText('6');
@@ -75,7 +85,10 @@ test('Zurück auf ein Kriterium: wieder das einfache Zahlenfeld in der Zelle', a
   page.on('dialog', d => d.accept());
   await page.locator('.criteria-list .icon-btn.danger').last().click();
   await expect(page.locator('.criteria-name')).toHaveCount(1);
-  await expect(page.locator('#scoreTableBtn')).toHaveCount(0);
+  // Tabelle auch mit einem Kriterium: eine Spalte, ohne gewichtete Summe
+  await page.click('#scoreTableBtn');
+  await expect(page.locator('#valueDialog .score-table thead th')).toHaveCount(2);
+  await page.click('#valueDone');
   await page.click('#settingsDone');
   await page.click('[data-mode="edit"]');
   await expect(page.locator('[data-score-btn]')).toHaveCount(0);

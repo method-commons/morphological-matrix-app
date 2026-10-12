@@ -10,8 +10,9 @@ import { Model } from '../model.js';
 import { Texts } from '../texts.js';
 import { IconButton } from './components.jsx';
 import { fieldProps, prefs, state, useMatrix } from './core.js';
-import { $, closeDialog, openDialog, placeNear } from './dom.jsx';
+import { $, placeNear } from './dom.jsx';
 import { NumberField, selectField } from './fields.jsx';
+import { openValueTable } from './value-table.jsx';
 
 /** Ab so vielen Merkmalen erfasst man sie im Popover statt direkt in der Zelle. */
 const INLINE_MAX = 2;
@@ -20,8 +21,6 @@ const INLINE_MAX = 2;
 const attrFor = signal(/** @type {string | null} */ (null));
 /** Bis zu diesem Zeitpunkt löst Bildlauf kein Schließen aus (eigenes Weiterblättern scrollt). */
 let keepOpenUntil = 0;
-/** Tabelle geöffnet (nur dann wird sie gezeichnet). */
-const tableOpen = signal(false);
 
 /** Ob Merkmale im Popover erfasst werden. @param {Matrix} m */
 export const attributesInPopover = m => m.settings.attributes.length > INLINE_MAX;
@@ -203,14 +202,10 @@ function AttributePop() {
   );
 }
 
-// ---------- Tabelle aller Ausprägungen ----------
+// ---------- Tabelle aller Ausprägungen (im Dialog „Werte aller Ausprägungen“, value-table.jsx) ----------
 
-/** Tabelle öffnen und das erste Feld fokussieren. */
-export function openAttributeTable() {
-  tableOpen.value = true;
-  openDialog($('#attrDialog'));
-  selectField(/** @type {HTMLElement | null} */ ($('#attrDialog').querySelector('[data-r="0"][data-c="0"]')));
-}
+/** Dialog mit dem Reiter „Eigene Merkmale“ öffnen. */
+export const openAttributeTable = () => openValueTable('attr');
 
 /** Enter bzw. ↓/↑ springen in derselben Spalte zur nächsten bzw. vorigen Zeile. @param {KeyboardEvent} e */
 function tableKey(e) {
@@ -222,18 +217,13 @@ function tableKey(e) {
   else if ((arrows && e.key === 'ArrowUp') || (e.key === 'Enter' && e.shiftKey)) delta = -1;
   if (!delta) return;
   e.preventDefault();
-  selectField(/** @type {HTMLElement | null} */ ($('#attrDialog').querySelector(`[data-r="${Number(el.dataset.r) + delta}"][data-c="${el.dataset.c}"]`)));
+  selectField(/** @type {HTMLElement | null} */ ($('#valueDialog').querySelector(`[data-r="${Number(el.dataset.r) + delta}"][data-c="${el.dataset.c}"]`)));
 }
 
 /** Werte aller Ausprägungen je Merkmal. */
-function AttributeTable() {
+export function AttributeTable() {
   const m = useMatrix();
   const list = m.settings.attributes;
-  if (!tableOpen.value) return null;
-  if (!list.length) {
-    queueMicrotask(() => closeDialog($('#attrDialog')));
-    return null;
-  }
   let row = 0;
   return (
     <>
@@ -282,11 +272,6 @@ function AttributeTable() {
 
 export function initAttributes() {
   mount(<AttributePop />, $('#attrPop'));
-  mount(<AttributeTable />, $('#attrBody'));
-  const dialog = $('#attrDialog');
-  dialog.addEventListener('close', () => { tableOpen.value = false; });
-  $('#attrClose').addEventListener('click', () => closeDialog(dialog));
-  $('#attrDone').addEventListener('click', () => closeDialog(dialog));
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && attrFor.value != null) { e.preventDefault(); closeAttrPop(); }
   });

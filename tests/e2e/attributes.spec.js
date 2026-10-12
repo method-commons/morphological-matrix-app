@@ -79,14 +79,16 @@ test('Merkmale definieren: Auswahl mit Stufen, ab drei Merkmalen Popover mit Ent
   // Tabelle aller Ausprägungen
   await btn.click();
   await pop.getByRole('button', { name: 'Tabelle aller Ausprägungen …' }).click();
-  const dialog = page.locator('#attrDialog');
+  const dialog = page.locator('#valueDialog');
   await expect(dialog).toBeVisible();
-  await expect(page.locator('#attrHeading')).toHaveText('Eigene Merkmale');
+  // Nutzwert ist aus: keine Reiter, Titel der Merkmal-Tabelle
+  await expect(page.locator('#valueHeading')).toHaveText('Eigene Merkmale');
+  await expect(dialog.getByRole('tab')).toHaveCount(0);
   await expect(dialog.locator('[data-r="0"][data-c="0"]')).toBeFocused();
   await page.keyboard.type('0,5');
   await page.keyboard.press('Enter');
   await expect(dialog.locator('[data-r="1"][data-c="0"]')).toBeFocused();
-  await page.click('#attrDone');
+  await page.click('#valueDone');
   await expect(page.locator('[data-attr-btn="p1o1"]')).toContainText('0,5 kg');
 
   // Vergleich: Stufe und Warnung
