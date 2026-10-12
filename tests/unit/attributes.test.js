@@ -7,7 +7,7 @@ const { Attributes, Model, Ops, Evaluation, Languages } = loadApp();
 /** Matrix mit zwei Parametern und je zwei Ausprägungen; Konzept c1 wählt jeweils die erste. */
 function matrix(attributes, values = {}) {
   return Model.normalize({
-    version: 7,
+    version: 8,
     settings: { attributes },
     parameters: [
       { id: 'p1', options: [{ id: 'a1', text: 'A1', values: values.a1 }, { id: 'a2', text: 'A2', values: values.a2 }] },
