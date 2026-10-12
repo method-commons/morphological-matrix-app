@@ -120,7 +120,6 @@ export const TextsDe = (() => {
       examplesHint: 'Ein Beispiel öffnet sich als neue Matrix in einem eigenen Tab. Änderungen daran wirken sich nicht auf das Beispiel aus.',
       settingsHeading: 'Bewertung & Merkmale',
       exportHeading: 'Exportieren',
-      scoreHeading: 'Bewertung je Kriterium',
       settingsHint: 'Die Einstellungen gelten für die gesamte Matrix. Ausgeblendete Werte bleiben erhalten und erscheinen beim erneuten Aktivieren wieder.',
       costsToggle: '<strong>Kosten</strong> je Ausprägung erfassen',
       costsDesc: 'Für jedes Konzept werden die Kosten der gewählten Ausprägungen summiert.',
@@ -421,6 +420,14 @@ export const TextsDe = (() => {
       warnTitle: limit => `Grenze überschritten: ${limit}`,
       sort: (name, dir) => `${name} (${dir === 'asc' ? 'niedrigstes zuerst' : 'höchstes zuerst'})`,
       csvColumn: (name, unit) => (unit ? `${name} [${unit}]` : name),
+    },
+
+    // Dialog „Werte aller Ausprägungen“ (Reiter Nutzwert / Eigene Merkmale)
+    valueTable: {
+      heading: 'Werte aller Ausprägungen',
+      score: 'Nutzwert',
+      criteria: n => plural(n, 'Kriterium', 'Kriterien'),
+      attr: 'Eigene Merkmale',
     },
 
     // Nutzwert nach Kriterien

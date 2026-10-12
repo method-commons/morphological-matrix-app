@@ -22,6 +22,7 @@ import { initExport } from './export.jsx';
 import { initAttributes } from './attributes.jsx';
 import { initSolutions } from './solutions.jsx';
 import { initCriteria } from './criteria.jsx';
+import { initValueTable } from './value-table.jsx';
 import { initTabs, onExternalDocChange, tabById, toggleTabMenu } from './tabs.jsx';
 import { initMatrix } from './render-matrix.jsx';
 import { initChrome } from './chrome.jsx';
@@ -171,6 +172,7 @@ function init() {
   initAttributes();
   initSolutions();
   initCriteria();
+  initValueTable();
   initStart();
   save(); // auch eine neu erzeugte Startmatrix sofort sichern (stabile IDs nach Neuladen)
   // Einstellungen und geöffnete Tabs sofort an diesen Browser-Tab binden – sonst übernähme er

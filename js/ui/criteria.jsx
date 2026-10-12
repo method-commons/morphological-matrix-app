@@ -12,16 +12,15 @@ import { Ops } from '../ops.js';
 import { Texts } from '../texts.js';
 import { Icon, IconButton } from './components.jsx';
 import { fieldProps, mutate, prefs, state, useMatrix } from './core.js';
-import { $, closeDialog, openDialog, placeNear } from './dom.jsx';
+import { $, placeNear } from './dom.jsx';
 import { NumberField } from './fields.jsx';
+import { openValueTable } from './value-table.jsx';
 import { Util } from '../util.js';
 
 /** Ausprägung, deren Popover offen ist. */
 const scoreFor = signal(/** @type {string | null} */ (null));
 /** Bis zu diesem Zeitpunkt löst Bildlauf kein Schließen aus (eigenes Weiterblättern scrollt). */
 let keepOpenUntil = 0;
-/** Bewertungstabelle geöffnet (nur dann wird sie gezeichnet). */
-const tableOpen = signal(false);
 
 /** Wert eines Kriteriums setzen bzw. (leer) entfernen. @param {MatrixOption} o @param {string} cid @param {number | null} n */
 function setScore(o, cid, n) {
@@ -86,7 +85,7 @@ export function CriteriaEditor() {
       </div>
       <div class="criteria-foot">
         <button type="button" class="btn btn-small" id="addCriterionBtn" onClick={addCriterion}><Icon name="plus" /><span>{Texts.criteria.add}</span></button>
-        {many ? <button type="button" class="btn btn-small" id="scoreTableBtn" onClick={openScoreTable}>{Texts.criteria.openTable}</button> : null}
+        <button type="button" class="btn btn-small" id="scoreTableBtn" onClick={() => openValueTable('score')}>{Texts.criteria.openTable}</button>
       </div>
       {many ? <p class="setting-desc">{Texts.criteria.sumHint}</p> : null}
     </div>
@@ -199,19 +198,13 @@ function ScorePop() {
           <IconButton icon="left" label={Texts.criteria.prev} disabled={idx <= 0} onClick={() => moveScorePop(all[idx - 1].id)} />
           <IconButton icon="right" label={Texts.criteria.next} disabled={idx >= all.length - 1} onClick={() => moveScorePop(all[idx + 1].id)} />
         </span>
-        <button type="button" class="btn btn-small" onClick={() => { closeScorePop(false); openScoreTable(); }}>{Texts.criteria.table}</button>
+        <button type="button" class="btn btn-small" onClick={() => { closeScorePop(false); openValueTable('score'); }}>{Texts.criteria.table}</button>
       </div>
     </>
   );
 }
 
-// ---------- Bewertungstabelle ----------
-
-export function openScoreTable() {
-  tableOpen.value = true;
-  openDialog($('#scoreDialog'));
-  focusField(/** @type {HTMLInputElement | null} */ ($('#scoreDialog').querySelector('input[data-r="0"]')));
-}
+// ---------- Bewertungstabelle (im Dialog „Werte aller Ausprägungen“, value-table.jsx) ----------
 
 /** Enter bzw. ↓/↑ springen in derselben Spalte zur nächsten bzw. vorigen Zeile. @param {KeyboardEvent} e */
 function tableKey(e) {
@@ -221,14 +214,15 @@ function tableKey(e) {
   else if (e.key === 'ArrowUp' || (e.key === 'Enter' && e.shiftKey)) delta = -1;
   if (!delta) return;
   e.preventDefault();
-  const next = /** @type {HTMLInputElement | null} */ ($('#scoreDialog').querySelector(`input[data-r="${Number(el.dataset.r) + delta}"][data-c="${el.dataset.c}"]`));
+  const next = /** @type {HTMLInputElement | null} */ ($('#valueDialog').querySelector(`input[data-r="${Number(el.dataset.r) + delta}"][data-c="${el.dataset.c}"]`));
   focusField(next);
 }
 
-function ScoreTable() {
+/** Erfüllungsgrad je Ausprägung und Kriterium; bei mehreren Kriterien mit gewichtetem Nutzwert. */
+export function ScoreTable() {
   const m = useMatrix();
-  if (!tableOpen.value) return null;
   const shares = Evaluation.criterionShares(m);
+  const many = shares.length > 1;
   const max = m.settings.utilityMax;
   let row = 0;
   return (
@@ -240,14 +234,14 @@ function ScoreTable() {
             <tr>
               <th scope="col">{Texts.criteria.option}</th>
               {shares.map(({ c, share }) => <th key={c.id} scope="col">{Model.criterionLabel(c)}<small>{Util.formatPercent(share)}</small></th>)}
-              <th scope="col" class="num">{Texts.summary.utility}<small>{Texts.criteria.weighted}</small></th>
+              {many ? <th scope="col" class="num">{Texts.summary.utility}<small>{Texts.criteria.weighted}</small></th> : null}
             </tr>
           </thead>
           <tbody>
             {m.parameters.map((p, pi) => (
               <Fragment key={p.id}>
                 <tr class="score-param">
-                  <th scope="colgroup" colSpan={shares.length + 2}>
+                  <th scope="colgroup" colSpan={shares.length + (many ? 2 : 1)}>
                     {Model.parameterLabel(p, pi)}<small>{Texts.criteria.paramWeight(Util.formatNumber(Evaluation.weightOf(p)))}</small>
                   </th>
                 </tr>
@@ -266,7 +260,7 @@ function ScoreTable() {
                           />
                         </td>
                       ))}
-                      <td class="num">{s.value == null ? '–' : Util.formatNumber(s.value)}</td>
+                      {many ? <td class="num">{s.value == null ? '–' : Util.formatNumber(s.value)}</td> : null}
                     </tr>
                   );
                 })}
@@ -281,11 +275,6 @@ function ScoreTable() {
 
 export function initCriteria() {
   mount(<ScorePop />, $('#scorePop'));
-  mount(<ScoreTable />, $('#scoreBody'));
-  const dialog = $('#scoreDialog');
-  dialog.addEventListener('close', () => { tableOpen.value = false; });
-  $('#scoreClose').addEventListener('click', () => closeDialog(dialog));
-  $('#scoreDone').addEventListener('click', () => closeDialog(dialog));
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && scoreFor.value != null) { e.preventDefault(); closeScorePop(); }
   });

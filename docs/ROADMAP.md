@@ -19,7 +19,7 @@ Aus der Liste:
 | 6 | Kosten/Nutzen-Streudiagramm | Pareto-Front, im Vergleich und im Bericht |
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
-| 4 | Bewertung nach Kriterien | mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung; Bewertung im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV; Lösungsraum rechnet mit dem gewichteten Mittel (`js/scores.js`) – Datenformat 8 |
+| 4 | Bewertung nach Kriterien | mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung; Bewertung im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV; Lösungsraum rechnet mit dem gewichteten Mittel (`js/scores.js`); Bewertungs- und Merkmal-Tabelle in einem Dialog mit Reitern – Datenformat 8 |
 | – | Eigene Merkmale | beschreibende Werte je Ausprägung mit Zusammenfassung je Konzept und Grenzen – Datenformat 7 |
 | – | Vorlagen für Merkmale | 16 Vorlagen in fünf Gruppen (DE/EN), darunter Kano-Kategorie und Wert/Aufwand; Grenze „unter Stufe“ und Zusammenfassung „Anzahl je Stufe“ |
 
@@ -27,7 +27,7 @@ Aus der Liste:
 
 - **3 – Mehrfachwahl je Parameter:** Varianten bzw. Lösungsfamilien („Mahlwerk A *oder* B“). Ändert das Datenformat und berührt Bewertung, Verträglichkeiten, Vergleich und Export – großer Aufwand.
 - **5 – Sensitivitätsanalyse:** Wie stabil ist die Rangfolge, wenn sich Gewichte ändern? Schieberegler mit Live-Rangfolge oder „Rang kippt ab Gewicht x“. Mittlerer Aufwand; mit den Kriterien (4, umgesetzt) jetzt aussagekräftiger.
-- **Tabellen zusammenführen:** Bewertungstabelle (Kriterien) und Tabelle der eigenen Merkmale als ein Dialog mit Reitern „Nutzwert“ / „Eigene Merkmale“ – derzeit zwei getrennte Dialoge.
+- **Kosten in der Tabelle „Werte aller Ausprägungen“:** Kosten als zusätzliche Spalte im Reiter „Nutzwert“ (dann „Bewertung“) – zurückgestellt beim Zusammenführen der Tabellen.
 - **8 – Stände festhalten:** benannte Versionen einer Matrix („vor Workshop“ / „nach Workshop“) mit Vergleich der Unterschiede. Mittlerer Aufwand.
 - **10 – Abstimmen im Team:** Punkte an Ausprägungen oder Konzepte vergeben und zusammenfassen. Ohne Server nur über Teilen-Links, die zusammengeführt werden.
 

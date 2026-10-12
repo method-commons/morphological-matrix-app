@@ -115,7 +115,6 @@ export const TextsEn = (() => {
       examplesHint: 'An example opens as a new matrix in its own tab. Your changes do not affect the example.',
       settingsHeading: 'Evaluation & attributes',
       exportHeading: 'Export',
-      scoreHeading: 'Rating per criterion',
       settingsHint: 'These settings apply to the whole matrix. Hidden values are kept and reappear when you turn the setting back on.',
       costsToggle: 'Record <strong>cost</strong> per option',
       costsDesc: 'For each concept, the costs of the selected options are added up.',
@@ -411,6 +410,14 @@ export const TextsEn = (() => {
       warnTitle: limit => `Limit exceeded: ${limit}`,
       sort: (name, dir) => `${name} (${dir === 'asc' ? 'lowest first' : 'highest first'})`,
       csvColumn: (name, unit) => (unit ? `${name} [${unit}]` : name),
+    },
+
+    // Dialog "Values of all options" (tabs Utility / Custom attributes)
+    valueTable: {
+      heading: 'Values of all options',
+      score: 'Utility',
+      criteria: n => plural(n, 'criterion', 'criteria'),
+      attr: 'Custom attributes',
     },
 
     // Utility by criteria
