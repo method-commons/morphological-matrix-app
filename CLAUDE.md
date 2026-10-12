@@ -32,13 +32,13 @@ Chromium ist vorinstalliert; kein `playwright install`.
 - **Logik ohne DOM** in `js/*.js` (Namensräume `Model`, `Ops`, `Evaluation`, `Consistency`, `Attributes`, `Solutions`, `IO`, `Report` …), Oberfläche in `js/ui/*.jsx`.
 - **Zustand:** `state` in `js/ui/core.js` ist ein normales Objekt; neu gezeichnet wird über das Signal `revision` (`render()`), Komponenten lesen es mit `useMatrix()`. Das Neuzeichnen ist synchron (`options.debounceRendering = cb => cb()` in `main.js`).
 - **Änderungen:** strukturell mit `mutate(fn)` (Verlaufseintrag, Speichern, Neuzeichnen); Eingabefelder mit `{...fieldProps(apply)}` (Verlaufseintrag beim Verlassen).
-- **Web Worker:** `count-worker.js` (Zählung, Restzahlen) und `solutions-worker.js` (Lösungsraum) importieren nur texte-freie Module (`counting.js`, `solutions.js`, `limits.js`), damit sie klein bleiben.
+- **Web Worker:** `count-worker.js` (Zählung, Restzahlen) und `solutions-worker.js` (Lösungsraum) importieren nur texte-freie Module (`counting.js`, `solutions.js`, `limits.js`, `scores.js`), damit sie klein bleiben.
 - **Texte** nur in `js/i18n/de.js` (maßgeblich) und `en.js` (gleiche Struktur, wird geprüft). Statische Texte in `index.html` über `data-i18n`.
 - **CSS** in `css/*.css`, eingebunden in `styles.css` mit Kaskaden-Ebenen; die Import-Reihenfolge ist die Reihenfolge innerhalb einer Ebene.
 
 ## Datenformat
 
-- Aktuell **Version 7** (`Model.SCHEMA_VERSION`). Bei inkompatiblen Erweiterungen Version erhöhen, in `MIGRATIONS[n]` (Rohdaten → Rohdaten) umwandeln, `Model.normalize` ergänzen, `docs/DATENFORMAT.md` (Beispiel, Regeln, Versionstabelle) und alle `examples/*.json` (Feld `version`) anpassen.
+- Aktuell **Version 8** (`Model.SCHEMA_VERSION`). Bei inkompatiblen Erweiterungen Version erhöhen, in `MIGRATIONS[n]` (Rohdaten → Rohdaten) umwandeln, `Model.normalize` ergänzen, `docs/DATENFORMAT.md` (Beispiel, Regeln, Versionstabelle) und alle `examples/*.json` (Feld `version`) anpassen.
 - Beispiele müssen exakt der Ausgabe von `normalize` entsprechen (Test `examples.test.js`); optionale Felder dürfen fehlen, der Test ergänzt sie (`withEmptyNotes`).
 - Beispiel-JSON **textuell** bearbeiten (z. B. per Regex), nicht mit `json.dumps` neu formatieren – das kompakte Layout geht sonst verloren.
 

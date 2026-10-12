@@ -1,6 +1,6 @@
 # Roadmap – Stand und offene Ideen
 
-Stand: Oktober 2026 (nach PR #55). Die Nummern beziehen sich auf die Liste fehlender fachlicher
+Stand: Oktober 2026 (nach PR #59; dazu Bewertung nach Kriterien). Die Nummern beziehen sich auf die Liste fehlender fachlicher
 Funktionen, abgeglichen mit dem Ablauf der morphologischen Methode.
 
 ## Umgesetzt
@@ -19,25 +19,15 @@ Aus der Liste:
 | 6 | Kosten/Nutzen-Streudiagramm | Pareto-Front, im Vergleich und im Bericht |
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
+| 4 | Bewertung nach Kriterien | mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung; Bewertung im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV; Lösungsraum rechnet mit dem gewichteten Mittel (`js/scores.js`) – Datenformat 8 |
 | – | Eigene Merkmale | beschreibende Werte je Ausprägung mit Zusammenfassung je Konzept und Grenzen – Datenformat 7 |
 | – | Vorlagen für Merkmale | 16 Vorlagen in fünf Gruppen (DE/EN), darunter Kano-Kategorie und Wert/Aufwand; Grenze „unter Stufe“ und Zusammenfassung „Anzahl je Stufe“ |
-
-## Fertig, aber bewusst nicht übernommen
-
-**4 – Bewertung nach Kriterien** (Branch `claude/nutzwert-kriterien`, Commit `e73d02c`, darauf ein
-älterer Stand der Merkmale): mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung, Bewertung
-im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV.
-Der Branch basiert auf einem Stand vor den eigenen Merkmalen und vor dem Lösungsraum. Zum Übernehmen:
-
-- neu auf `main` aufsetzen; das Datenformat wird dann **8** (Migration `score` → `scores: { nw: n }`, `settings.criteria`),
-- die Tabelle der Merkmale (`#attrDialog`) und die Bewertungstabelle zu einem Dialog mit Reitern „Nutzwert“ / „Eigene Merkmale“ zusammenführen (so war es im Branch),
-- `js/solutions.js` auf den Nutzwert nach Kriterien umstellen (Beitrag je Ausprägung = gewichtetes Mittel; linear, Schranken bleiben gültig),
-- gemeinsame Popover-/Tabellen-Stile (`score-*` in `css/attributes.css`) nicht doppelt anlegen.
 
 ## Offen
 
 - **3 – Mehrfachwahl je Parameter:** Varianten bzw. Lösungsfamilien („Mahlwerk A *oder* B“). Ändert das Datenformat und berührt Bewertung, Verträglichkeiten, Vergleich und Export – großer Aufwand.
-- **5 – Sensitivitätsanalyse:** Wie stabil ist die Rangfolge, wenn sich Gewichte ändern? Schieberegler mit Live-Rangfolge oder „Rang kippt ab Gewicht x“. Mittlerer Aufwand; mit Kriterien (4) aussagekräftiger.
+- **5 – Sensitivitätsanalyse:** Wie stabil ist die Rangfolge, wenn sich Gewichte ändern? Schieberegler mit Live-Rangfolge oder „Rang kippt ab Gewicht x“. Mittlerer Aufwand; mit den Kriterien (4, umgesetzt) jetzt aussagekräftiger.
+- **Tabellen zusammenführen:** Bewertungstabelle (Kriterien) und Tabelle der eigenen Merkmale als ein Dialog mit Reitern „Nutzwert“ / „Eigene Merkmale“ – derzeit zwei getrennte Dialoge.
 - **8 – Stände festhalten:** benannte Versionen einer Matrix („vor Workshop“ / „nach Workshop“) mit Vergleich der Unterschiede. Mittlerer Aufwand.
 - **10 – Abstimmen im Team:** Punkte an Ausprägungen oder Konzepte vergeben und zusammenfassen. Ohne Server nur über Teilen-Links, die zusammengeführt werden.
 

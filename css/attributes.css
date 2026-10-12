@@ -32,7 +32,7 @@
   .score-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
   .score-table th, .score-table td { padding: 5px 8px; border-bottom: 1px solid var(--border); text-align: left; }
   .score-table thead th { position: sticky; top: 0; z-index: 1; background: var(--surface); font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); vertical-align: bottom; }
-  .score-table thead th:not(:first-child) { max-width: 130px; overflow-wrap: anywhere; hyphens: auto; }
+  .score-table thead th:not(:first-child) { max-width: 130px; overflow-wrap: break-word; hyphens: auto; }
   .score-table tbody th { min-width: 150px; }
   .score-table thead th small { display: block; font-weight: 600; text-transform: none; letter-spacing: 0; }
   .score-table tbody th { font-weight: 400; }
