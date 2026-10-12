@@ -21,6 +21,7 @@ import { activeConcept, collapseKey, fieldProps, isCollapsed, money, prefs, setP
 import { restCounts } from './count.js';
 import { $, focusField, shownColor } from './dom.jsx';
 import { NumberField } from './fields.jsx';
+import { multiCriteria, ScoreButton } from './criteria.jsx';
 import { scheduleLines } from './lines.js';
 import { NoteButton, NoteField, NoteMark, showNote } from './notes.jsx';
 import { searchClass, searchResult } from './search.js';
@@ -168,6 +169,8 @@ function ParameterView({ p, pi, ctx }) {
 function OptionEdit({ p, pi, o, oi, ctx }) {
   const optLabel = o.text.trim() || Texts.fallback.option(oi + 1);
   const { costs, utility, currency, utilityMax, moscow } = state.settings;
+  // Mit einem Kriterium bleibt es beim Zahlenfeld in der Zelle
+  const criterion = state.settings.criteria[0];
   return (
     <div class={`opt-cell edit${searchClass(ctx.found, p.id, o.id)}`} data-oid={o.id}>
       <div class="opt-main">
@@ -217,12 +220,15 @@ function OptionEdit({ p, pi, o, oi, ctx }) {
               <NumberField value={o.cost} placeholder={Texts.matrix.costPlaceholder} label={Texts.matrix.costOf(optLabel)} apply={n => { o.cost = n; }} />
             </label>
           ) : null}
-          {utility ? (
+          {utility && multiCriteria(state) ? (
+            // Mehrere Kriterien: Gesamtwert als Knopf, bewertet wird im Popover (eigene Zeile)
+            <div class="metric-field metric-score"><ScoreButton o={o} optLabel={optLabel} /></div>
+          ) : utility ? (
             <label class="metric-field">
               <span class="metric-unit" title={Texts.matrix.utilityUnitTitle}>{Texts.matrix.utilityUnit}</span>
               <NumberField
-                value={o.score} placeholder={`0–${utilityMax}`} label={Texts.matrix.utilityOf(optLabel, utilityMax)}
-                apply={n => { o.score = n; }} validate={n => n >= 0 && n <= utilityMax}
+                value={o.scores[criterion.id] ?? null} placeholder={`0–${utilityMax}`} label={Texts.matrix.utilityOf(optLabel, utilityMax)}
+                apply={n => { if (n == null) delete o.scores[criterion.id]; else o.scores[criterion.id] = n; }} validate={n => n >= 0 && n <= utilityMax}
               />
             </label>
           ) : null}
@@ -351,7 +357,8 @@ function OptionPick({ p, o, oi, ctx, rest }) {
 function optionMetricsText(o) {
   const parts = [];
   if (state.settings.costs && o.cost != null) parts.push(money(o.cost));
-  if (state.settings.utility && o.score != null) parts.push(Texts.matrix.utilityShort(Util.formatNumber(o.score)));
+  const score = state.settings.utility ? Evaluation.optionScore(state, o).value : null;
+  if (score != null) parts.push(Texts.matrix.utilityShort(Util.formatNumber(score)));
   return parts.join(' · ');
 }
 

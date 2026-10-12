@@ -2,13 +2,13 @@
 
 Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON-Export, Teilen-Links (`#m=…`, Base64url-kodiertes JSON) und die mitgelieferten Beispiele (`data` in `examples/*.json`, siehe [`examples/README.md`](../examples/README.md)). Typdefinitionen für die Entwicklung stehen in [`types.d.ts`](../types.d.ts).
 
-**Aktuelle Version: 7** (`Model.SCHEMA_VERSION` in `js/model.js`)
+**Aktuelle Version: 8** (`Model.SCHEMA_VERSION` in `js/model.js`)
 
 ## Aufbau
 
 ```jsonc
 {
-  "version": 7,
+  "version": 8,
   "title": "Beispiel: Kaffeemaschine",
   "description": "Gesamtfunktion: …",
   "settings": {
@@ -33,6 +33,9 @@ Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON
                                // Auswahl: { "op": "level" (ab Stufe) | "levelBelow" (unter Stufe), "value": "<Stufen-ID>" };
                                // Ja/Nein: { "op": "allYes" }
       }
+    ],
+    "criteria": [            // Kriterien des Nutzwerts (mindestens eines); Gewicht relativ, wird auf 100 % umgerechnet
+      { "id": "nw", "name": "", "weight": 100 }   // name leer = „Nutzwert“
     ]
   },
   "categories": [            // optional, Reihenfolge = Anzeige
@@ -46,11 +49,12 @@ Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON
       "weight": 3,           // Gewichtung für den Nutzwert, null = 1
       "categoryId": "k1",    // null = ohne Kategorie
       "options": [
-        // cost/score/priority: null = nicht erfasst; priority: "must" | "should" | "could" | "wont";
+        // cost/priority: null = nicht erfasst; priority: "must" | "should" | "could" | "wont";
+        // scores: Erfüllungsgrad je Kriterium (ID aus settings.criteria), fehlend = nicht bewertet;
         // note: Notiz zur Ausprägung (optional, leer = keine);
         // values: Wert je Merkmal (ID aus settings.attributes), fehlend = nicht erfasst; Zahl, Stufen-ID,
         // true/false oder Text je nach Form (optional)
-        { "id": "o1", "text": "Durchlauferhitzer", "cost": 18, "score": 6, "priority": "must", "note": "", "values": { "gew": 0.4 } }
+        { "id": "o1", "text": "Durchlauferhitzer", "cost": 18, "scores": { "nw": 6 }, "priority": "must", "note": "", "values": { "gew": 0.4 } }
       ]
     }
   ],
@@ -104,6 +108,7 @@ Beim Wiederherstellen (`IO.parseBackup`, `IO.planRestore`) werden vorhandene Mat
 - Negative Gewichte werden verworfen; ungültige Farben durch Standardfarben ersetzt; unbekannte Prioritäten werden zu `null`.
 - Fehlende Notizen (`note`) werden zu `""` – in Dateien und Beispielen dürfen sie daher fehlen.
 - Eigene Merkmale: doppelte IDs werden ersetzt, unbekannte Formen zu `"text"`; Einheit, Nachkommastellen und Stufen gelten nur für die passende Form. Eine nicht passende Zusammenfassung wird zur Vorgabe der Form (erste in der Liste oben), eine nicht passende oder unvollständige Grenze zu `null`. Werte zu unbekannten Merkmalen und Werte, die nicht zur Form passen, entfallen (Ganzzahl-Merkmale behalten Nachkommastellen; die Oberfläche markiert sie als ungültig). Fehlen `attributes` bzw. `values`, gelten leere Listen – in Dateien dürfen sie fehlen.
+- Kriterien: doppelte IDs werden ersetzt, ungültige Gewichte zu 100; ohne Kriterium gilt eines („Nutzwert“). Werte zu unbekannten Kriterien und nicht numerische Werte entfallen.
 - Fehlender oder unbekannter Konzept-Status wird zu `"draft"`, ein fehlender Grund (`statusNote`) zu `""` – auch diese Felder dürfen in Dateien fehlen.
 - Verträglichkeiten: Paare mit unbekannten Ausprägungen, aus demselben Parameter, mit unbekannter Art oder doppelt werden verworfen; `a` und `b` werden so geordnet, dass `a < b`. Beim Löschen einer Ausprägung oder eines Parameters entfallen die zugehörigen Paare.
 
@@ -120,6 +125,7 @@ Beim Wiederherstellen (`IO.parseBackup`, `IO.planRestore`) werden vorhandene Mat
 | 7 | Eigene Merkmale: `settings.attributes`, `values` je Ausprägung | keine Umwandlung nötig; die neue Version verhindert, dass ältere App-Versionen die Merkmale verwerfen |
 |  | später ergänzt (ohne neue Version): Grenze `"levelBelow"` (unter Stufe) bei Auswahl-Merkmalen | ältere App-Versionen kennen sie nicht und setzen die Grenze auf `null`; alles andere bleibt erhalten |
 |  | später ergänzt (ohne neue Version): Zusammenfassung `"counts"` (Anzahl je Stufe) bei Auswahl-Merkmalen | ältere App-Versionen setzen sie auf `"max"` (höchste Stufe) zurück |
+| 8 | Nutzwert nach Kriterien: `settings.criteria`, `scores` je Ausprägung statt `score` | `score` wird zum Wert des einzigen Kriteriums „Nutzwert“ (`id: "nw"`) |
 
 ## Eine neue Version einführen
 

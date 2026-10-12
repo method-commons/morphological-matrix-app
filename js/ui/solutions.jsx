@@ -55,7 +55,7 @@ function startWorker() {
 function searchMatrix(m) {
   return {
     settings: m.settings,
-    parameters: m.parameters.map(p => ({ id: p.id, weight: p.weight, options: p.options.map(o => ({ id: o.id, cost: o.cost, score: o.score, values: o.values })) })),
+    parameters: m.parameters.map(p => ({ id: p.id, weight: p.weight, options: p.options.map(o => ({ id: o.id, cost: o.cost, scores: o.scores, values: o.values })) })),
     constraints: m.constraints.map(c => ({ a: c.a, b: c.b, type: c.type })),
   };
 }

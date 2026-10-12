@@ -10,6 +10,7 @@
  * ist das Ergebnis als unvollständig markiert.
  */
 import { Limits } from './limits.js';
+import { Scores } from './scores.js';
 
 /**
  * @typedef {{
@@ -62,7 +63,6 @@ export const Solutions = (() => {
   function compile(m, q) {
     const P = m.parameters;
     const { settings } = m;
-    const max = settings.utilityMax;
     const weights = P.map(p => (p.weight == null ? 1 : p.weight));
     const W = weights.reduce((s, w) => s + w, 0);
     /** @type {Measure} */
@@ -70,9 +70,12 @@ export const Solutions = (() => {
     /** @type {Measure} */
     const utility = {
       agg: 'sum',
-      // Gewicht × Erfüllungsgrad; geteilt durch die Summe der Gewichte wird erst am Ende (wie im Vergleich)
-      vals: P.map((p, i) => p.options.map(o => (isNum(o.score) && W > 0
-        ? weights[i] * Math.min(max, Math.max(0, /** @type {number} */ (o.score))) : null))),
+      // Gewicht × Nutzwert der Ausprägung (gewichtetes Mittel über die Kriterien, wie im Vergleich);
+      // geteilt durch die Summe der Gewichte wird erst am Ende
+      vals: P.map((p, i) => p.options.map(o => {
+        const v = W > 0 ? Scores.optionScore(m, o).value : null;
+        return v == null ? null : weights[i] * v;
+      })),
     };
     // Merkmale: Zahlen (Wert), Auswahl (Stufe als Index), Ja/Nein (1 für Ja, 0 für Nein)
     const attrs = settings.attributes.map(a => {

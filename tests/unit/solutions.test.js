@@ -136,3 +136,23 @@ test('Leere Matrix bzw. Parameter ohne Ausprägung', () => {
   m.parameters[0].options = [];
   assert.deepEqual(Solutions.search(m, query()), { rows: [], matched: 0, exhaustive: true, complete: true });
 });
+
+test('Nutzwert nach Kriterien: Filter und Sortierung wie im Vergleich (gewichtetes Mittel je Ausprägung)', () => {
+  const m = matrix();
+  // Zweites Kriterium mit eigenen Werten; einzelne Ausprägungen bleiben teilweise unbewertet
+  m.settings.criteria = [{ id: 'nw', name: 'Geschmack', weight: 60 }, { id: 'k2', name: 'Bedienung', weight: 40 }];
+  m.parameters.forEach((p, i) => p.options.forEach((o, k) => { if ((i + k) % 3) o.scores.k2 = (i * 3 + k * 2) % 11; }));
+  const q = query({ minUtility: 5, sort: 'utility', limit: 500 });
+  const r = Solutions.search(m, q);
+  const b = brute(m, q);
+  assert.equal(r.matched, b.length);
+  assert.ok(r.matched > 0);
+  // Nutzwert der Treffer stimmt mit Evaluation.conceptUtility überein und ist absteigend sortiert
+  const utils = r.rows.map(x => Evaluation.conceptUtility(m, { id: 'x', selections: x.selections }).value);
+  r.rows.forEach((x, i) => assert.ok(Math.abs(x.utility - /** @type {number} */ (utils[i])) < 1e-9));
+  assert.deepEqual(utils, [...utils].sort((a, c) => c - a));
+  // Branch & Bound liefert dieselben besten Treffer
+  const bb = Solutions.search(m, query({ sort: 'utility', limit: 20 }), { fullLimit: 10 });
+  const full = Solutions.search(m, query({ sort: 'utility', limit: 20 }));
+  assert.deepEqual(bb.rows.map(x => x.selections), full.rows.map(x => x.selections));
+});

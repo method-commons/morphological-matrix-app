@@ -1,5 +1,5 @@
 /*
- * Eingabefelder (Kosten, Gewichte, Nutzwerte, Merkmale) – geteilt von Matrix und Merkmalen.
+ * Eingabefelder (Kosten, Gewichte, Nutzwerte, Merkmale) – geteilt von Matrix, Kriterien und Merkmalen.
  */
 import { useState } from 'preact/hooks';
 import { fieldProps } from './core.js';
