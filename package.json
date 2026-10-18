@@ -1,6 +1,7 @@
 {
   "name": "morphological-matrix-app",
   "private": true,
+  "license": "MIT",
   "description": "Morphologische Matrix im Browser – gebaut mit Vite, veröffentlicht über GitHub Pages.",
   "type": "module",
   "scripts": {

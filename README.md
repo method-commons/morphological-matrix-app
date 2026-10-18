@@ -150,3 +150,7 @@ npm test            # alles zusammen (inkl. Build)
 - **CI:** `.github/workflows/ci.yml` führt Lint, Typprüfung, Unit-Tests, Build und Browser-Tests bei jedem Pull Request und Push auf `main` aus (Browser im Cache je Playwright-Version).
 - **Veröffentlichung:** im selben Workflow, nur auf `main` und nur wenn alle Prüfungen grün sind: Der geprüfte Build (`dist/`) geht auf GitHub Pages (Einstellung des Repositorys: *Settings → Pages → Source: GitHub Actions*). Manuell auslösbar über *Actions → CI → Run workflow*.
 - **Abhängigkeiten:** Dependabot (`.github/dependabot.yml`) schlägt wöchentlich gebündelte Updates für npm und GitHub Actions vor – ohne große Versionssprünge und ohne Playwright: dessen Version muss zum vorinstallierten Chromium der Cloud-Sitzungen passen (derzeit 1.56.1) und wird nur von Hand angehoben.
+
+## Lizenz
+
+MIT – siehe [LICENSE](LICENSE).
