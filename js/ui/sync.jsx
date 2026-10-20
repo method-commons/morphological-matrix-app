@@ -10,7 +10,7 @@ import { Model } from '../model.js';
 import { Store } from '../storage.js';
 import { Texts } from '../texts.js';
 import { Util } from '../util.js';
-import { docId, setSaveListener } from './core.js';
+import { docId, hasUnsavedChanges, setSaveListener } from './core.js';
 import { $, closeDialog, toast } from './dom.jsx';
 import { openInTab, onExternalDocChange } from './tabs.jsx';
 
@@ -33,8 +33,18 @@ const adapter = {
   list: () => Store.listDocs(),
   /** @param {string} id */
   read: id => Store.readDoc(id),
-  /** @param {string} id @param {any} data @param {number} savedAt */
-  write: (id, data, savedAt) => Store.writeDoc(id, data, savedAt),
+  /**
+   * Stand aus der Ablage übernehmen. Abgelehnt, solange die aktive Matrix ungespeicherte Änderungen
+   * hat – nach dem Speichern meldet der Kern dann einen Konflikt, statt sie zu überschreiben.
+   * Sonst sofort anzeigen (geöffnete Tabs wie bei einer Änderung aus einem anderen Browser-Tab).
+   * @param {string} id @param {any} data @param {number} savedAt
+   */
+  write: (id, data, savedAt) => {
+    if (id === docId && hasUnsavedChanges()) return false;
+    if (!Store.writeDoc(id, data, savedAt)) return false;
+    onExternalDocChange(id);
+    return true;
+  },
   /** @param {unknown} raw */
   normalize: raw => Model.normalize(/** @type {any} */ (raw)),
   /** @param {any} data */
@@ -66,8 +76,7 @@ export function loadSync() {
       toast,
       preselect: await pristineExamples(),
     });
-    // Aus der Ablage übernommen: wie eine Änderung aus einem anderen Browser-Tab behandeln
-    controller.onRemoteChange(/** @param {string} id */ id => { onExternalDocChange(id); onLibraryChange(); });
+    controller.onRemoteChange(() => onLibraryChange());
     controller.subscribe(() => { updateMenuHint(); onLibraryChange(); });
     mount(<ui.StatusChip />, $('#syncSlot'));
     controller.start();

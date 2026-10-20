@@ -101,7 +101,7 @@ test('Einrichten: prüfen, Auswahl hochladen, Statusanzeige', async ({ page }) =
   await expect(dlg).toContainText(`Repo ${REPO} erreichbar`);
   await expect(dlg).toContainText('Schreibrecht vorhanden');
   await expect(dlg).toContainText(`Ordner ${APP}/ wird beim ersten Speichern angelegt`);
-  const row = dlg.locator('.mcs-upload .doc', { hasText: 'Meine Kaffeemaschine' });
+  const row = dlg.locator('.mcs-upload .mcs-doc', { hasText: 'Meine Kaffeemaschine' });
   await expect(row.locator('input[type="checkbox"]')).toBeChecked();
   await dlg.locator('[data-sync="finish"]').click();
   await expect(dlg).toBeHidden();
@@ -197,7 +197,7 @@ test('Meine Matrizen: Zustand je Matrix, „Nur in der Ablage“ öffnen, Lösch
   await menu(page, 'open');
   const lib = page.locator('#libraryDialog');
   await expect(lib.locator('.doc', { hasText: 'Hier' }).locator('[data-doc-state]')).toHaveAttribute('data-doc-state', 'ok');
-  const remote = lib.locator('.mcs-remote .doc');
+  const remote = lib.locator('.mcs-remote .mcs-doc');
   await expect(remote).toContainText(example.data.title);
   await expect(remote).toContainText('Laptop');
   await remote.locator('[data-sync="download"]').click();

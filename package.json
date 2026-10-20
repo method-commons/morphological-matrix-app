@@ -27,7 +27,7 @@
     "vitest": "5.0.3"
   },
   "dependencies": {
-    "@method-commons/sync": "git+https://github.com/method-commons/sync.git#b98f3c46ef4dd36e1a0f166c77f255489024f1ea",
+    "@method-commons/sync": "git+https://github.com/method-commons/sync.git#267e8c4aaaec39a98d6b33b30e814eb9bf942a19",
     "@preact/signals": "2.11.3",
     "fflate": "0.8.3",
     "preact": "10.29.8"

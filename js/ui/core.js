@@ -177,6 +177,9 @@ function scheduleSave() {
   saveTimer = setTimeout(save, SAVE_DELAY);
 }
 
+/** Hat die aktive Matrix Änderungen, die noch nicht gespeichert sind? */
+export const hasUnsavedChanges = () => saveTimer !== 0 || JSON.stringify(state) !== lastSaved;
+
 /** Ausstehendes verzögertes Speichern sofort erledigen (no-op, wenn nichts aussteht). */
 export function flushSave() {
   if (saveTimer) save();
