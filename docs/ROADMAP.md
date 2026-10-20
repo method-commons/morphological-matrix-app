@@ -34,7 +34,7 @@ Aus der Liste:
 ## Zurückgestellt (Entscheidung des Maintainers)
 
 - neue Standardbewertungen (über Kosten, Nutzwert, MoSCoW hinaus) – später entscheiden
-- geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups) – **umgesetzt als Ablage im eigenen GitHub-Repo** (Stufe 1 des gemeinsamen Konzepts [method-commons/sync](https://github.com/method-commons/sync/blob/main/docs/KONZEPT.md)); Versionen (Stufe 2) und Supabase (Stufe 3) folgen
+- geräteübergreifendes Arbeiten / Synchronisation (inkl. QR-Code-Mockups) – **umgesetzt als Ablage im eigenen GitHub-Repo** (Stufe 1 des gemeinsamen Konzepts [method-commons/sync](https://github.com/method-commons/sync/blob/main/docs/KONZEPT.md)) und mit Versionen (Stufe 2: Liste, benannte Stände, Ansehen, Wiederherstellen); Supabase (Stufe 3) folgt
 - Immer bzw. Valibot als Bibliotheken
 
 ## Ideen für Folgeschritte zu den Vorlagen
