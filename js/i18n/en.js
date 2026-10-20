@@ -39,6 +39,7 @@ export const TextsEn = (() => {
         open: 'My matrices …',
         examples: 'Examples …',
         storage: 'Storage …',
+        versions: 'Versions …',
         settings: 'Evaluation & attributes …',
         constraints: 'Compatibility …',
         exportJson: 'Save as JSON',
@@ -772,6 +773,7 @@ export const TextsEn = (() => {
     sync: {
       notSet: 'not set up',
       storage: 'storage',
+      previewLocked: 'Earlier state – view only. Choose “Back to current state” to edit.',
       nouns: { one: 'matrix', many: 'matrices', list: 'My matrices' },
       summary: (parameters, concepts) => `${plural(parameters, 'parameter', 'parameters')} · ${plural(concepts, 'concept', 'concepts')}`,
     },

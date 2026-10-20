@@ -160,6 +160,7 @@ export function setSaveListener(fn) { saveListener = fn; }
 export function save() {
   clearTimeout(saveTimer);
   saveTimer = 0;
+  if (preview) return; // früherer Stand: nur ansehen
   const json = JSON.stringify(state);
   if (json === lastSaved) return;
   lastSaved = json;
@@ -227,6 +228,7 @@ function clearHistory() {
 
 /** Strukturelle Änderung: Verlauf sichern, ändern, speichern, neu zeichnen. @param {(m: Matrix) => void} fn */
 export function mutate(fn) {
+  if (blockedByPreview()) return;
   pushHistory(snapshot());
   fn(state);
   save();
@@ -234,6 +236,7 @@ export function mutate(fn) {
 }
 
 export function undo() {
+  if (blockedByPreview()) return;
   const snap = undoStack.pop();
   if (snap == null) return;
   redoStack.push(snapshot());
@@ -243,6 +246,7 @@ export function undo() {
 }
 
 export function redo() {
+  if (blockedByPreview()) return;
   const snap = redoStack.pop();
   if (snap == null) return;
   undoStack.push(snapshot());
@@ -263,7 +267,10 @@ const fieldSnaps = new WeakMap();
 export function fieldProps(apply, after = render) {
   return {
     onFocus: (/** @type {Event} */ e) => { fieldSnaps.set(/** @type {EventTarget} */ (e.currentTarget), snapshot()); },
+    // früherer Stand: Tippen gar nicht erst zulassen
+    onBeforeInput: (/** @type {Event} */ e) => { if (preview) { e.preventDefault(); blockedByPreview(); } },
     onInput: (/** @type {Event} */ e) => {
+      if (preview) return;
       const el = /** @type {HTMLInputElement} */ (e.currentTarget);
       if (!fieldSnaps.has(el)) fieldSnaps.set(el, snapshot());
       apply(el.value);
@@ -286,6 +293,7 @@ export function fieldProps(apply, after = render) {
  */
 export function bindField(el, apply, after = render) {
   const handlers = fieldProps(apply, after);
+  el.addEventListener('beforeinput', handlers.onBeforeInput);
   el.addEventListener('focus', handlers.onFocus);
   el.addEventListener('input', handlers.onInput);
   el.addEventListener('change', handlers.onChange);
@@ -295,10 +303,51 @@ export function bindField(el, apply, after = render) {
 export function adoptExternalChange() {
   const doc = Store.readDoc(docId);
   if (!doc) return;
+  if (preview) { preview.saved = doc.data; return; } // gilt nach dem Ansehen
   state = doc.data;
   lastSaved = JSON.stringify(state);
   clearHistory(); // eigener Verlauf passt nicht mehr zum fremden Stand
   render();
+}
+
+// ---------- Früherer Stand (Versionen der Ablage) ----------
+
+/** Wird ein früherer Stand angesehen? Dann ist der aktuelle in `saved` geparkt. @type {{ saved: Matrix } | null} */
+let preview = null;
+/** Ende des Ansehens melden (Leiste der Ablage, sync.jsx). @type {() => void} */
+let previewEndListener = () => {};
+/** @param {() => void} fn */
+export function setPreviewEndListener(fn) { previewEndListener = fn; }
+export const isPreview = () => preview !== null;
+
+/** Bearbeiten ist gesperrt, solange ein früherer Stand gezeigt wird (mit Hinweis). */
+function blockedByPreview() {
+  if (!preview) return false;
+  toast(Texts.sync.previewLocked);
+  render(); // Auswahlfelder auf den gezeigten Stand zurücksetzen
+  return true;
+}
+
+/** Früheren Stand der aktiven Matrix nur lesend zeigen. @param {Matrix} data */
+export function showPreview(data) {
+  flushSave();
+  preview ??= { saved: state };
+  state = data;
+  lastSaved = JSON.stringify(state);
+  document.body.classList.add('is-preview');
+  render();
+}
+
+/** Zurück zum aktuellen Stand (auch vor einem Tab-Wechsel). */
+export function endPreview() {
+  if (!preview) return;
+  const doc = Store.readDoc(docId);
+  state = doc ? doc.data : preview.saved;
+  preview = null;
+  lastSaved = JSON.stringify(state);
+  document.body.classList.remove('is-preview');
+  render();
+  previewEndListener();
 }
 
 // ---------- Ansicht ----------

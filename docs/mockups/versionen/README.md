@@ -8,7 +8,7 @@ Grundlage ist Stufe 1 ([Mockups Ablage](../ablage/README.md)).
 Die Bilder sind **Screenshots der echten App mit eingerichteter Ablage** (GitHub-API nachgebildet) und
 eingeblendetem Entwurf (gekennzeichnet mit „Entwurf“ bzw. gelb hinterlegt). Die Matrix ist das mitgelieferte
 Beispiel „Kaffeemaschine“; Uhrzeiten, Geräte, Namen der Stände und die Zahl der Stände sind erfunden.
-**Noch nichts davon ist umgesetzt.**
+**Umgesetzt** mit den Entscheidungen wie empfohlen (siehe unten); die Bilder zeigen den Entwurf.
 
 | # | Ansicht | Datei |
 |---|---------|-------|

@@ -15,7 +15,7 @@ import { activateTab, openInTab, openNewDoc, tabById } from './tabs.jsx';
 import { Util } from '../util.js';
 import { IconButton } from './components.jsx';
 import { render as mount } from 'preact';
-import { openStorage, setLibraryListener, syncChanged, syncRemoved, syncUI } from './sync.jsx';
+import { openStorage, openVersions, setLibraryListener, syncChanged, syncRemoved, syncUI } from './sync.jsx';
 
 // ---------- Import / Export / Teilen ----------
 
@@ -277,6 +277,7 @@ export const MENU_ACTIONS = {
   example: openExamples,
   open: openLibrary,
   storage: openStorage,
+  versions: openVersions,
   settings: openSettings,
   constraints: openConsDialog,
   'export-json': exportJson,

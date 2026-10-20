@@ -1,6 +1,10 @@
 /* Layout, Karten, Beschreibung und Kennzahlen */
 @layer areas {
   /* ===== Layout & Karten ===== */
+  /* Leiste „Früherer Stand“ (Versionen der Ablage): klebt unter der Kopfzeile */
+  .preview-slot { position: sticky; top: 64px; z-index: 40; max-width: 1680px; margin: 0 auto; padding: 12px var(--gutter) 0; }
+  .preview-slot:empty { display: none; }
+  @media (max-width: 640px) { .preview-slot { position: static; } }
   .layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;

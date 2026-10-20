@@ -10,7 +10,7 @@ import { Store } from '../storage.js';
 import { Texts } from '../texts.js';
 import { Icon } from './components.jsx';
 import {
-  adoptExternalChange, CLOSED_LIMIT, closedTabs, DEFAULT_PREFS, docId, fieldProps, flushSave, lastSaved, pickView, prefs, redoStack, render, save, saveWorkspace, setActiveDoc, setClosedTabs, state, tabs, undoStack, useMatrix,
+  adoptExternalChange, CLOSED_LIMIT, closedTabs, DEFAULT_PREFS, docId, endPreview, fieldProps, flushSave, lastSaved, pickView, prefs, redoStack, render, save, saveWorkspace, setActiveDoc, setClosedTabs, state, tabs, undoStack, useMatrix,
 } from './core.js';
 import { MENU_ACTIONS } from './dialogs.jsx';
 import { $, placeNear, toast } from './dom.jsx';
@@ -22,6 +22,7 @@ export const tabById = id => tabs.find(t => t.docId === id) || null;
 
 /** Stand des aktiven Tabs in seinem Eintrag ablegen (vor einem Wechsel). */
 function stashActiveTab() {
+  endPreview(); // früheren Stand nie im Tab-Eintrag ablegen
   flushSave(); // ausstehende Eingaben noch unter der bisherigen Matrix speichern
   const t = activeTab();
   if (!t) return;

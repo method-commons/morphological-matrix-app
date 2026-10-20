@@ -10,7 +10,7 @@ import { Model } from '../model.js';
 import { Store } from '../storage.js';
 import { Texts } from '../texts.js';
 import { Util } from '../util.js';
-import { docId, hasUnsavedChanges, setSaveListener } from './core.js';
+import { docId, endPreview, hasUnsavedChanges, isPreview, setPreviewEndListener, setSaveListener, showPreview } from './core.js';
 import { $, closeDialog, toast } from './dom.jsx';
 import { openInTab, onExternalDocChange } from './tabs.jsx';
 
@@ -40,7 +40,7 @@ const adapter = {
    * @param {string} id @param {any} data @param {number} savedAt
    */
   write: (id, data, savedAt) => {
-    if (id === docId && hasUnsavedChanges()) return false;
+    if (id === docId && (hasUnsavedChanges() || isPreview())) return false;
     if (!Store.writeDoc(id, data, savedAt)) return false;
     onExternalDocChange(id);
     return true;
@@ -75,10 +75,13 @@ export function loadSync() {
       onOpenDoc: openDoc,
       toast,
       preselect: await pristineExamples(),
+      onPreview: (/** @type {any} */ p) => { if (p) showPreview(p.data); else endPreview(); },
     });
+    setPreviewEndListener(() => ui.endPreview());
     controller.onRemoteChange(() => onLibraryChange());
     controller.subscribe(() => { updateMenuHint(); onLibraryChange(); });
     mount(<ui.StatusChip />, $('#syncSlot'));
+    mount(<ui.PreviewBar />, $('#previewSlot'));
     controller.start();
     return ui;
   })();
@@ -115,6 +118,11 @@ export function updateMenuHint() {
 /** Menü „Ablage …“: einrichten bzw. Übersicht. */
 export async function openStorage() {
   (await loadSync()).openStorage();
+}
+
+/** Menü „Versionen …“ (ohne Ablage: Hinweis zum Einrichten). */
+export async function openVersions() {
+  (await loadSync()).openVersions(docId);
 }
 
 /** Gespeichert (aus core.js). @param {string} id */

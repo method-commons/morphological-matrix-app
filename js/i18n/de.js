@@ -44,6 +44,7 @@ export const TextsDe = (() => {
         open: 'Meine Matrizen …',
         examples: 'Beispiele …',
         storage: 'Ablage …',
+        versions: 'Versionen …',
         settings: 'Bewertung & Merkmale …',
         constraints: 'Verträglichkeiten …',
         exportJson: 'Als JSON speichern',
@@ -784,6 +785,7 @@ export const TextsDe = (() => {
     sync: {
       notSet: 'nicht eingerichtet',
       storage: 'Ablage',
+      previewLocked: 'Früherer Stand – nur ansehen. Zum Bearbeiten „Zurück zum aktuellen Stand“ wählen.',
       nouns: { one: 'Matrix', many: 'Matrizen', list: 'Meine Matrizen' },
       summary: (parameters, concepts) => `${parameters} Parameter · ${plural(concepts, 'Konzept', 'Konzepte')}`,
     },
