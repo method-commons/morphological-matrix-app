@@ -32,14 +32,16 @@ Bilder neu erzeugen: `npx vite build && npx vite preview &`, dann `node docs/moc
 - **Token abgelaufen oder widerrufen:** Anzeige „Offline“ mit Hinweis „Token erneuern“; gearbeitet wird weiter im Browser.
 - **Ablage trennen** löscht Token und Einstellungen in diesem Browser; Matrizen im Browser und im Repo bleiben erhalten.
 
-## Offene Entscheidungen
+## Entscheidungen
+
+Getroffen im Oktober 2026: alle wie empfohlen, nur bei 6 mit dem Repo-Namen als Ordner.
 
 1. **Ort der Statusanzeige:** in der Kopfzeile neben „Datei“ (Entwurf) oder nur als Symbol am Tab der Matrix? – Empfehlung: **Kopfzeile**; mobil nur das Symbol ohne Text.
 2. **Takt der automatischen Versionen:** höchstens alle 5 Minuten je Matrix? – Empfehlung: **ja**, fest; einstellbar erst bei Bedarf.
 3. **Konfliktdialog öffnen:** erst beim Klick auf die gelbe Anzeige (Entwurf) oder sofort? – Empfehlung: **beim Klick**, dazu ein Hinweis-Toast; vor dem nächsten Übertragen dieser Matrix muss entschieden sein.
 4. **Vorauswahl beim Hochladen:** alle Matrizen angehakt? – Empfehlung: **ja, alle**; Beispiele, die unverändert sind, nicht angehakt.
 5. **„Nur in der Ablage“ in „Meine Matrizen“** (Entwurf) oder in einem eigenen Dialog? – Empfehlung: **in „Meine Matrizen“**, eine Liste für alles.
-6. **Dateiname im Repo:** `morphologische-matrix/<id>.json` (Entwurf) oder lesbar `…/<titel>-<id>.json`? – Empfehlung: **nur die ID** – Umbenennen erzeugt sonst neue Dateien.
+6. **Dateiname im Repo:** `<Ordner>/<id>.json`, nur die ID – Umbenennen erzeugt sonst neue Dateien. **Entschieden: Ordner = Name des Repos** bzw. Teil der Pages-Adresse (`morphological-matrix-app/`, `raci-app/` …) – unabhängig von der Sprache und leicht der App zuzuordnen.
 7. **Gerätename** (hier „Laptop“) für Konflikte und Versionen: automatisch aus dem Browser (z. B. „Chrome · Windows“) oder selbst benannt? – Empfehlung: **automatisch, im Dialog „Ablage“ änderbar**.
 
 Nächster Schritt nach „Ja“: Stufe 1 im Repo [method-commons/sync](https://github.com/method-commons/sync) (Kern mit `memory`- und GitHub-Adapter), dann Einbau in diese App.

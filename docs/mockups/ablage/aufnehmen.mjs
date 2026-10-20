@@ -190,7 +190,7 @@ await dialog(page, `${head('Ablage einrichten', 'Matrizen zusätzlich außerhalb
       <span class="doc-desc">Eigenes Projekt mit Datenbank – auch ohne GitHub, im EU-Rechenzentrum oder auf eigenem Server. Echtes Löschen, Teilen mit Rechten.</span>
       <span class="doc-meta">Einrichtung mit einem SQL-Skript zum Kopieren</span></div></li>
   </ul>
-  <div class="mk-note">${ICON.cloud}<div><b>Gilt für alle Methoden-Apps in diesem Browser:</b> Morphologische Matrix, 2-Achsen-Matrix, RACI-Matrix, 5 Warum und User Stories nutzen dieselbe Ablage – einmal einrichten genügt. Gearbeitet wird weiter im Browser; die Ablage wird im Hintergrund abgeglichen, auch nach einer Pause ohne Netz.</div></div>
+  <div class="mk-note">${ICON.cloud}<div><b>Gilt für alle Methoden-Apps in diesem Browser:</b> Morphologische Matrix, 2-Achsen-Matrix, RACI-Matrix, 5 Why und User Stories nutzen dieselbe Ablage – einmal einrichten genügt. Gearbeitet wird weiter im Browser; die Ablage wird im Hintergrund abgeglichen, auch nach einer Pause ohne Netz.</div></div>
   <div class="dialog-foot"><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn btn-primary">Weiter</button></div>`);
 await shot(page, 'a2-ablage-waehlen.png');
 
@@ -221,7 +221,7 @@ await dialog(page, `${head('Ablage einrichten')}
     <li>${ICON.check} Repo <b>${REPO}</b> erreichbar<small>privat</small></li>
     <li>${ICON.check} Schreibrecht vorhanden<small>nur Inhalte</small></li>
     <li>${ICON.check} Token gültig bis 18.01.2027<small>in 90 Tagen</small></li>
-    <li>${ICON.check} Ordner <code>morphologische-matrix/</code> wird beim ersten Speichern angelegt</li>
+    <li>${ICON.check} Ordner <code>morphological-matrix-app/</code> wird beim ersten Speichern angelegt</li>
   </ul>
   <div class="mk-h">Matrizen aus diesem Browser hochladen</div>
   <ul class="doc-list">${docs.map(d => docRow(d, state(d) !== 'local')).join('')}</ul>
@@ -319,7 +319,7 @@ await dialog(page, `${head('Ablage')}
     <dt>Ablage</dt><dd>${ICON.gh} GitHub-Repo <b>${REPO}</b></dd><dd><a class="mk-link" href="#">Auf GitHub ${ICON.ext}</a></dd>
     <dt>Token</dt><dd>gültig bis 18.01.2027 (noch 90 Tage)</dd><dd><button class="btn btn-small">Token erneuern</button></dd>
     <dt>Diese App</dt><dd>${docs.length} Matrizen im Browser, davon ${docs.filter(d => state(d) !== 'local').length} in der Ablage · 1 weitere nur in der Ablage</dd><dd></dd>
-    <dt>Andere Apps</dt><dd>RACI-Matrix 2 · 5 Warum 1 · 2-Achsen-Matrix 0 · User Stories 0</dd><dd></dd>
+    <dt>Andere Apps</dt><dd>RACI-Matrix 2 · 5 Why 1 · 2-Achsen-Matrix 0 · User Stories 0</dd><dd></dd>
     <dt>Versionen</dt><dd>automatisch höchstens alle 5 Minuten, dazu „Stand speichern“</dd><dd></dd>
   </dl>
   <div class="mk-note warn">${ICON.warn}<div><b>Löschen in Git:</b> Eine gelöschte Matrix verschwindet aus dem Repo, bleibt aber in dessen Historie. Endgültig löschen lässt sie sich nur auf GitHub (Repo löschen oder Historie bereinigen).</div></div>
