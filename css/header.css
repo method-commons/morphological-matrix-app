@@ -103,5 +103,7 @@
   }
 
   .toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  /* „Datei“ bleibt rechts, auch wenn die Leiste umbricht – sonst öffnet sein Menü links außerhalb des Bildes */
+  .toolbar > .menu { margin-left: auto; }
   .btn-group { display: flex; gap: 2px; }
 }
