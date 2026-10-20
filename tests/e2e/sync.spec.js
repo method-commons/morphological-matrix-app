@@ -164,9 +164,11 @@ test('Konflikt: Statusanzeige öffnet die Auswahl, „Beide behalten“ legt ein
   const id = await idOf(page, 'Gemeinsam');
   await expect.poll(() => gh.read(fileOf(id))?.data.title).toBe('Gemeinsam');
 
+  // erst hier ändern und speichern, dann auf dem anderen Gerät – jeder Abgleich danach sieht beides
+  await setTitle(page, 'Browser-Stand');
+  await expect.poll(() => idOf(page, 'Browser-Stand')).toBe(id);
   const rec = gh.read(fileOf(id));
   gh.write(fileOf(id), { ...rec, savedAt: rec.savedAt + 1000, device: 'Laptop', data: { ...rec.data, title: 'Laptop-Stand' } });
-  await setTitle(page, 'Browser-Stand');
   await nudge(page);
   const chip = page.locator('#syncStatus');
   await expect(chip).toHaveAttribute('data-status', 'conflict');
