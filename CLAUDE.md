@@ -4,7 +4,8 @@ Morphologische Matrix (Zwicky-Box) als Web-App ohne Server: Vite 8, Preact 10 + 
 Daten nur im Browser (localStorage), veröffentlicht über GitHub Pages. Aufbau, Funktionen und die
 Tabelle aller Module stehen in der [README](README.md), das Datenformat in
 [docs/DATENFORMAT.md](docs/DATENFORMAT.md), Stand und offene Ideen in [docs/ROADMAP.md](docs/ROADMAP.md), das Konzept für ein optionales Backend
-(Konto, Sync, Versionen; noch nicht umgesetzt) in [docs/BACKEND.md](docs/BACKEND.md).
+(Grundlage) in [docs/BACKEND.md](docs/BACKEND.md); die Ablage (GitHub-Repo, Sync, Konflikte) kommt aus dem gemeinsamen Kern
+[method-commons/sync](https://github.com/method-commons/sync), angebunden in `js/ui/sync.jsx`.
 
 ## Zusammenarbeit (Vereinbarungen mit dem Maintainer)
 
@@ -41,6 +42,14 @@ Chromium ist vorinstalliert; kein `playwright install`.
 - Aktuell **Version 8** (`Model.SCHEMA_VERSION`). Bei inkompatiblen Erweiterungen Version erhöhen, in `MIGRATIONS[n]` (Rohdaten → Rohdaten) umwandeln, `Model.normalize` ergänzen, `docs/DATENFORMAT.md` (Beispiel, Regeln, Versionstabelle) und alle `examples/*.json` (Feld `version`) anpassen.
 - Beispiele müssen exakt der Ausgabe von `normalize` entsprechen (Test `examples.test.js`); optionale Felder dürfen fehlen, der Test ergänzt sie (`withEmptyNotes`).
 - Beispiel-JSON **textuell** bearbeiten (z. B. per Regex), nicht mit `json.dumps` neu formatieren – das kompakte Layout geht sonst verloren.
+
+## Ablage (method-commons/sync)
+
+- Abhängigkeit `@method-commons/sync` über `git+https://github.com/method-commons/sync.git#<Tag oder Commit>` (nicht `github:` – npm schreibt sonst `git+ssh` ins Lockfile, das scheitert in der CI). Neue Version des Kerns: hier `package.json` und Lockfile anheben.
+- Fest eingebunden nur `@method-commons/sync/config`; Kern, Oberfläche und Stile lädt `loadSync()` erst bei Bedarf.
+- Nach jedem Speichern meldet `core.js` die ID (`setSaveListener`), Löschen in „Meine Matrizen“ ruft `syncRemoved`.
+- `resolve.dedupe: ['preact']` in `vite.config.js` – sonst zwei Preact-Instanzen (Hooks der Oberfläche brechen).
+- E2E: `tests/e2e/sync.spec.js` bildet die GitHub-API mit `page.route` nach (Dateien mit `sha`).
 
 ## Bekannte Fallstricke
 

@@ -23,6 +23,8 @@
 
       <div class="btn-group" id="historyButtons"></div>
 
+      <div id="syncSlot"></div>
+
       <div class="menu">
         <button type="button" class="btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-controls="menuList">
           <span data-i18n="ui.menu.file"></span>
@@ -32,6 +34,8 @@
           <button type="button" role="menuitem" data-action="new" data-i18n="ui.menu.new"></button>
           <button type="button" role="menuitem" data-action="open" data-i18n="ui.menu.open"></button>
           <button type="button" role="menuitem" data-action="example" data-i18n="ui.menu.examples"></button>
+          <hr>
+          <button type="button" role="menuitem" data-action="storage" class="menu-split"><span data-i18n="ui.menu.storage"></span><span class="menu-hint" id="storageHint"></span></button>
           <hr>
           <button type="button" role="menuitem" data-action="settings" data-i18n="ui.menu.settings"></button>
           <button type="button" role="menuitem" data-action="constraints" data-i18n="ui.menu.constraints"></button>
@@ -127,6 +131,7 @@
       <input type="file" id="backupFile" accept=".zip,application/zip,.json,application/json" multiple hidden>
     </div>
     <ul class="doc-list" id="docList"></ul>
+    <div id="remoteDocs"></div>
   </dialog>
 
   <dialog class="dialog" id="examplesDialog" aria-labelledby="examplesHeading">

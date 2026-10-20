@@ -1,11 +1,12 @@
 # Backend – Konzept
 
-Stand: Oktober 2026 · **Konzept, noch nicht umgesetzt** · zwei Varianten · offene Entscheidungen am Ende.
+Stand: Oktober 2026 · **Grundlage** – umgesetzt ist inzwischen die Ablage im eigenen GitHub-Repo (siehe unten) · zwei Varianten · Entscheidungen am Ende.
 
 > **Weiterentwicklung:** Das Konzept wird für alle Methoden-Apps gemeinsam fortgeführt – mit einem
 > gemeinsamen Sync-Kern, einer Datenbank für alle Apps und zusätzlich einem GitHub-Repo als Ablage:
 > [method-commons/sync, docs/KONZEPT.md](https://github.com/method-commons/sync/blob/main/docs/KONZEPT.md).
 > Dieses Dokument bleibt die Grundlage; wo beide abweichen, gilt das gemeinsame Konzept.
+> **Stufe 1 ist umgesetzt:** Ablage im eigenen GitHub-Repo (Datei → Ablage …), siehe README.
 
 Ziel: Die App bleibt öffentlich und **ohne Konto in vollem Umfang** nutzbar. Wer sich registriert,
 bekommt zusätzlich: Matrizen im Backend gespeichert (auf allen Geräten verfügbar) und versioniert.

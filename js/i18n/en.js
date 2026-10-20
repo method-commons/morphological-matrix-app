@@ -38,6 +38,7 @@ export const TextsEn = (() => {
         new: 'New blank matrix',
         open: 'My matrices …',
         examples: 'Examples …',
+        storage: 'Storage …',
         settings: 'Evaluation & attributes …',
         constraints: 'Compatibility …',
         exportJson: 'Save as JSON',
@@ -765,6 +766,14 @@ export const TextsEn = (() => {
       show: 'Show',
       delete: 'Delete matrix',
       deleteOpen: 'Open matrices cannot be deleted – close the tab first',
+    },
+
+    // Storage (method-commons/sync); all other texts come from the shared core
+    sync: {
+      notSet: 'not set up',
+      storage: 'storage',
+      nouns: { one: 'matrix', many: 'matrices', list: 'My matrices' },
+      summary: (parameters, concepts) => `${plural(parameters, 'parameter', 'parameters')} · ${plural(concepts, 'concept', 'concepts')}`,
     },
 
     csv: {
