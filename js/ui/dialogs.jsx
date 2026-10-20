@@ -15,6 +15,7 @@ import { activateTab, openInTab, openNewDoc, tabById } from './tabs.jsx';
 import { Util } from '../util.js';
 import { IconButton } from './components.jsx';
 import { render as mount } from 'preact';
+import { openStorage, setLibraryListener, syncChanged, syncRemoved, syncUI } from './sync.jsx';
 
 // ---------- Import / Export / Teilen ----------
 
@@ -71,9 +72,13 @@ function openLibrary() {
 /** „Meine Matrizen“ (neu zeichnen nach Änderungen, z. B. Löschen oder Wiederherstellen). */
 export function renderLibrary() {
   mount(<Library />, $('#docList'));
+  const sync = syncUI();
+  mount(sync ? <sync.RemoteOnly /> : null, $('#remoteDocs'));
 }
+setLibraryListener(() => { if ($('#libraryDialog').open) renderLibrary(); });
 
 function Library() {
+  const sync = syncUI();
   const docs = Store.listDocs();
   if (!docs.some(d => d.id === docId)) docs.unshift({ id: docId, savedAt: Date.now(), data: state });
   return (
@@ -93,6 +98,7 @@ function Library() {
               <span class="doc-meta">{Texts.library.meta(dateFormat.format(new Date(doc.savedAt)), data.parameters.length, data.concepts.length)}</span>
             </div>
             <div class="doc-actions">
+              {sync ? <sync.DocState id={doc.id} /> : null}
               <button
                 type="button" class="btn btn-small" disabled={current}
                 onClick={() => {
@@ -108,6 +114,7 @@ function Library() {
                 onClick={() => {
                   if (!window.confirm(Texts.prompt.deleteMatrix(title))) return;
                   Store.removeDoc(doc.id);
+                  syncRemoved(doc.id);
                   setClosedTabs(closedTabs.filter(x => x !== doc.id));
                   saveWorkspace();
                   renderLibrary();
@@ -224,6 +231,7 @@ export async function restoreBackup(files) {
   save();
   const plan = IO.planRestore(items, Store.listDocs(), Util.uid);
   const written = plan.add.filter(doc => Store.writeDoc(doc.id, doc.data, doc.savedAt));
+  written.forEach(doc => syncChanged(doc.id));
   if (written.length < plan.add.length) toast(Texts.backup.storageFull(plan.add.length - written.length));
   else {
     toast(Texts.backup.restoredTitle(Texts.backup.restored({
@@ -268,6 +276,7 @@ export const MENU_ACTIONS = {
   new: () => { openNewDoc(Model.blankState(), Texts.toast.newMatrix); setMode('edit'); },
   example: openExamples,
   open: openLibrary,
+  storage: openStorage,
   settings: openSettings,
   constraints: openConsDialog,
   'export-json': exportJson,

@@ -26,6 +26,7 @@ import { initValueTable } from './value-table.jsx';
 import { initTabs, onExternalDocChange, tabById, toggleTabMenu } from './tabs.jsx';
 import { initMatrix } from './render-matrix.jsx';
 import { initChrome } from './chrome.jsx';
+import { initSync } from './sync.jsx';
 
 function bindEvents() {
   const desc = $('#description');
@@ -174,6 +175,7 @@ function init() {
   initCriteria();
   initValueTable();
   initStart();
+  initSync();
   save(); // auch eine neu erzeugte Startmatrix sofort sichern (stabile IDs nach Neuladen)
   // Einstellungen und geöffnete Tabs sofort an diesen Browser-Tab binden – sonst übernähme er
   // beim Neuladen die zuletzt in einem anderen Browser-Tab verwendeten (Vorgabe im localStorage).

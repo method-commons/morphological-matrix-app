@@ -151,6 +151,11 @@ export let lastSaved = null;
 const SAVE_DELAY = 300;
 let saveTimer = 0;
 
+/** Nach jedem Speichern benachrichtigen (Ablage, siehe sync.jsx). @type {(id: string) => void} */
+let saveListener = () => {};
+/** @param {(id: string) => void} fn */
+export function setSaveListener(fn) { saveListener = fn; }
+
 /** Sofort speichern (und ein ausstehendes verzögertes Speichern erledigen). */
 export function save() {
   clearTimeout(saveTimer);
@@ -158,7 +163,8 @@ export function save() {
   const json = JSON.stringify(state);
   if (json === lastSaved) return;
   lastSaved = json;
-  if (!Store.writeDoc(docId, state)) toast(Texts.errors.storageFull);
+  if (Store.writeDoc(docId, state)) saveListener(docId);
+  else toast(Texts.errors.storageFull);
 }
 
 /**

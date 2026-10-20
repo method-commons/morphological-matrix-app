@@ -7,7 +7,7 @@ Konzept und getroffene Entscheidungen: [method-commons/sync – docs/KONZEPT.md]
 Die Bilder sind **Screenshots der echten App** mit eingeblendetem Entwurf (gekennzeichnet mit „Entwurf“ bzw.
 gelb hinterlegt). Die Matrizen sind die mitgelieferten Beispiele „Kaffeemaschine“, „Food-Truck gründen“ und
 „Elektro-Lastenrad“; Repo, Uhrzeiten, das zweite Gerät („Laptop“) und die Zahlen der anderen Apps sind erfunden.
-**Noch nichts davon ist umgesetzt.**
+**Umgesetzt** (Stufe 1, Oktober 2026) – Abweichungen siehe unten.
 
 | # | Ansicht | Datei |
 |---|---------|-------|
@@ -45,3 +45,11 @@ Getroffen im Oktober 2026: alle wie empfohlen, nur bei 6 mit dem Repo-Namen als 
 7. **Gerätename** (hier „Laptop“) für Konflikte und Versionen: automatisch aus dem Browser (z. B. „Chrome · Windows“) oder selbst benannt? – Empfehlung: **automatisch, im Dialog „Ablage“ änderbar**.
 
 Nächster Schritt nach „Ja“: Stufe 1 im Repo [method-commons/sync](https://github.com/method-commons/sync) (Kern mit `memory`- und GitHub-Adapter), dann Einbau in diese App.
+
+## Abweichungen in der Umsetzung
+
+- **Konfliktdialog:** je Stand Zeitpunkt, Gerät und Kennzahlen, aber keine Liste der Änderungen – dafür braucht es den Vergleich (Stufe 4).
+- **„Versionen …“** steht noch nicht im Menü (Stufe 2); die Versionen liegen schon als Commits im Repo.
+- **Ablauf des Tokens** erscheint nur, wenn GitHub ihn mitliefert und der Browser ihn lesen darf; sonst „Ablauf unbekannt“.
+- **„Meine Matrizen“:** Der Hinweistext oben bleibt wie bisher; der Zustand steht an jeder Matrix.
+- **Gerätename** steht nicht im Assistenten, sondern nur im Dialog „Ablage“ (automatisch vorbelegt, z. B. „Chrome · Windows“).

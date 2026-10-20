@@ -43,6 +43,7 @@ export const TextsDe = (() => {
         new: 'Neue leere Matrix',
         open: 'Meine Matrizen …',
         examples: 'Beispiele …',
+        storage: 'Ablage …',
         settings: 'Bewertung & Merkmale …',
         constraints: 'Verträglichkeiten …',
         exportJson: 'Als JSON speichern',
@@ -777,6 +778,14 @@ export const TextsDe = (() => {
       show: 'Anzeigen',
       delete: 'Matrix löschen',
       deleteOpen: 'Geöffnete Matrizen können nicht gelöscht werden – zuerst den Tab schließen',
+    },
+
+    // Ablage (method-commons/sync); die übrigen Texte liefert der gemeinsame Kern
+    sync: {
+      notSet: 'nicht eingerichtet',
+      storage: 'Ablage',
+      nouns: { one: 'Matrix', many: 'Matrizen', list: 'Meine Matrizen' },
+      summary: (parameters, concepts) => `${parameters} Parameter · ${plural(concepts, 'Konzept', 'Konzepte')}`,
     },
 
     // Spaltenköpfe des CSV-Exports
