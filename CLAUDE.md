@@ -48,6 +48,7 @@ Chromium ist vorinstalliert; kein `playwright install`.
 - Abhängigkeit `@method-commons/sync` über `git+https://github.com/method-commons/sync.git#<Tag oder Commit>` (nicht `github:` – npm schreibt sonst `git+ssh` ins Lockfile, das scheitert in der CI). Neue Version des Kerns: hier `package.json` und Lockfile anheben.
 - Fest eingebunden nur `@method-commons/sync/config`; Kern, Oberfläche und Stile lädt `loadSync()` erst bei Bedarf.
 - Nach jedem Speichern meldet `core.js` die ID (`setSaveListener`), Löschen in „Meine Matrizen“ ruft `syncRemoved`.
+- Übernahmen aus der Ablage: abgelehnt, solange die aktive Matrix ungespeicherte Änderungen hat (`hasUnsavedChanges`, dann meldet der Kern einen Konflikt), sonst sofort angezeigt (`onExternalDocChange`).
 - `resolve.dedupe: ['preact']` in `vite.config.js` – sonst zwei Preact-Instanzen (Hooks der Oberfläche brechen).
 - E2E: `tests/e2e/sync.spec.js` bildet die GitHub-API mit `page.route` nach (Dateien mit `sha`).
 
