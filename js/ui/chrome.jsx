@@ -16,6 +16,7 @@ import {
   activeConcept, printing, prefs, redo, redoStack, render, revision, setMode, setPref, state, undo, undoStack, useMatrix,
 } from './core.js';
 import { $ } from './dom.jsx';
+import { openValueTable } from './value-table.jsx';
 import { CompareChart } from './render-chart.jsx';
 import { AttributesEditor } from './attribute-editor.jsx';
 import { openSolutions } from './solutions.jsx';
@@ -226,6 +227,12 @@ function SettingsForm() {
             {Model.CURRENCIES.map(c => <option key={c} value={c}>{Texts.ui.currencies[c]}</option>)}
           </select>
         </label>
+        {/* Mit Bewertung führt der Knopf unter den Kriterien in dieselbe Tabelle */}
+        {s.costs && !s.utility ? (
+          <div class="criteria-foot">
+            <button type="button" class="btn btn-small" id="costTableBtn" onClick={() => openValueTable('score')}>{Texts.criteria.openCostTable}</button>
+          </div>
+        ) : null}
       </div>
       <div class="setting">
         <label class="check setting-toggle">

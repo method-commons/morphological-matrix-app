@@ -1,7 +1,7 @@
 /*
  * Nutzwert nach Kriterien: Liste der Kriterien in den Bewertungseinstellungen, Knopf und
  * Popover zur Bewertung an der Ausprägung (Bearbeiten-Modus) und die Bewertungstabelle aller
- * Ausprägungen. Mit nur einem Kriterium bleibt es beim einfachen Zahlenfeld in der Zelle.
+ * Ausprägungen (mit den Kosten als erster Spalte). Mit nur einem Kriterium bleibt es beim einfachen Zahlenfeld in der Zelle.
  * Die Rechnung steht in js/evaluation.js (optionScore, conceptCriteria).
  */
 import { signal } from '@preact/signals';
@@ -218,21 +218,35 @@ function tableKey(e) {
   focusField(next);
 }
 
-/** Erfüllungsgrad je Ausprägung und Kriterium; bei mehreren Kriterien mit gewichtetem Nutzwert. */
+/** Hinweis über der Tabelle, passend zu den aktiven Spalten. @param {Matrix} m */
+function tableHint(m) {
+  const { costs, utility, utilityMax, currency } = m.settings;
+  if (costs && utility) return Texts.criteria.tableHintBoth(utilityMax, Util.currencySymbol(currency));
+  return costs ? Texts.criteria.tableHintCosts(Util.currencySymbol(currency)) : Texts.criteria.tableHint(utilityMax);
+}
+
+/**
+ * Kosten (falls aktiv) und Erfüllungsgrad je Ausprägung und Kriterium (falls die Bewertung aktiv
+ * ist); bei mehreren Kriterien mit gewichtetem Nutzwert. Die Kosten stehen als Spalte 0 vorne.
+ */
 export function ScoreTable() {
   const m = useMatrix();
-  const shares = Evaluation.criterionShares(m);
+  const { costs, utility } = m.settings;
+  const shares = utility ? Evaluation.criterionShares(m) : [];
   const many = shares.length > 1;
   const max = m.settings.utilityMax;
+  const first = costs ? 1 : 0;
+  const cols = 1 + first + shares.length + (many ? 1 : 0);
   let row = 0;
   return (
     <>
-      <p class="dialog-hint">{Texts.criteria.tableHint(max)}</p>
+      <p class="dialog-hint">{tableHint(m)}</p>
       <div class="score-table-wrap">
         <table class="score-table">
           <thead>
             <tr>
               <th scope="col">{Texts.criteria.option}</th>
+              {costs ? <th scope="col" class="cost-col">{Texts.criteria.cost}<small>{Util.currencySymbol(m.settings.currency)}</small></th> : null}
               {shares.map(({ c, share }) => <th key={c.id} scope="col">{Model.criterionLabel(c)}<small>{Util.formatPercent(share)}</small></th>)}
               {many ? <th scope="col" class="num">{Texts.summary.utility}<small>{Texts.criteria.weighted}</small></th> : null}
             </tr>
@@ -241,8 +255,8 @@ export function ScoreTable() {
             {m.parameters.map((p, pi) => (
               <Fragment key={p.id}>
                 <tr class="score-param">
-                  <th scope="colgroup" colSpan={shares.length + (many ? 2 : 1)}>
-                    {Model.parameterLabel(p, pi)}<small>{Texts.criteria.paramWeight(Util.formatNumber(Evaluation.weightOf(p)))}</small>
+                  <th scope="colgroup" colSpan={cols}>
+                    {Model.parameterLabel(p, pi)}{utility ? <small>{Texts.criteria.paramWeight(Util.formatNumber(Evaluation.weightOf(p)))}</small> : null}
                   </th>
                 </tr>
                 {p.options.map((o, oi) => {
@@ -252,11 +266,19 @@ export function ScoreTable() {
                   return (
                     <tr key={o.id}>
                       <th scope="row">{label}</th>
+                      {costs ? (
+                        <td class="score-cell cost-col">
+                          <NumberField
+                            value={o.cost} placeholder="–" label={Texts.matrix.costOf(label)}
+                            apply={n => { o.cost = n; }} data-r={r} data-c={0} onKeyDown={tableKey}
+                          />
+                        </td>
+                      ) : null}
                       {shares.map(({ c }, ci) => (
                         <td key={c.id} class="score-cell">
                           <NumberField
                             value={o.scores[c.id] ?? null} placeholder="–" label={Texts.criteria.scoreLabel(Model.criterionLabel(c), label, max)}
-                            apply={n => setScore(o, c.id, n)} validate={n => n >= 0 && n <= max} data-r={r} data-c={ci} onKeyDown={tableKey}
+                            apply={n => setScore(o, c.id, n)} validate={n => n >= 0 && n <= max} data-r={r} data-c={ci + first} onKeyDown={tableKey}
                           />
                         </td>
                       ))}

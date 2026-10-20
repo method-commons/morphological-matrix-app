@@ -1,6 +1,6 @@
 /*
- * Werte aller Ausprägungen: ein Dialog mit den Tabellen „Nutzwert“ (Bewertung je Kriterium,
- * criteria.jsx) und „Eigene Merkmale“ (attributes.jsx). Reiter nur, wenn beide vorhanden sind;
+ * Werte aller Ausprägungen: ein Dialog mit den Tabellen „Bewertung“ (Kosten und Bewertung je
+ * Kriterium, criteria.jsx) und „Eigene Merkmale“ (attributes.jsx). Reiter nur, wenn beide vorhanden sind;
  * sonst trägt der Dialog den Titel der einen Tabelle.
  */
 import { signal } from '@preact/signals';
@@ -18,8 +18,15 @@ import { selectField } from './fields.jsx';
 /** Gewählter Reiter; `null` = Dialog geschlossen (dann wird nichts gezeichnet). */
 const tab = signal(/** @type {ValueTab | null} */ (null));
 
-/** Reiter, die es gibt: Nutzwert bei aktiver Bewertung, Merkmale, sobald eines definiert ist. @param {Matrix} m */
-const tabsOf = m => /** @type {ValueTab[]} */ ([...(m.settings.utility ? ['score'] : []), ...(m.settings.attributes.length ? ['attr'] : [])]);
+/** Reiter, die es gibt: Bewertung bei aktiven Kosten oder Nutzwert, Merkmale, sobald eines definiert ist. @param {Matrix} m */
+const tabsOf = m => /** @type {ValueTab[]} */ ([...(m.settings.utility || m.settings.costs ? ['score'] : []), ...(m.settings.attributes.length ? ['attr'] : [])]);
+
+/** Name und Überschrift des Reiters „Bewertung“ je nach aktiven Spalten. @param {Matrix} m */
+function scoreNames(m) {
+  const { costs, utility } = m.settings;
+  if (costs && utility) return { tab: Texts.valueTable.rating, heading: Texts.valueTable.ratingHeading };
+  return utility ? { tab: Texts.valueTable.score, heading: Texts.criteria.tableHeading } : { tab: Texts.valueTable.costs, heading: Texts.valueTable.costsHeading };
+}
 
 /** Erstes Feld der sichtbaren Tabelle fokussieren und markieren. */
 const focusFirst = () => selectField(/** @type {HTMLElement | null} */ ($('#valueDialog').querySelector('[data-r="0"][data-c="0"]')));
@@ -41,8 +48,9 @@ function ValueTable() {
   const m = useMatrix();
   const tabs = tabsOf(m);
   const shown = tab.value && (tabs.includes(tab.value) ? tab.value : tabs[0]);
+  const names = scoreNames(m);
   const heading = tabs.length > 1 ? Texts.valueTable.heading
-    : shown === 'score' ? Texts.criteria.tableHeading : Texts.attributes.tableHeading;
+    : shown === 'score' ? names.heading : Texts.attributes.tableHeading;
   useLayoutEffect(() => { $('#valueHeading').textContent = heading; }, [heading]);
   if (!tab.value) return null;
   // Beide Tabellen weggefallen (Bewertung aus, letztes Merkmal gelöscht): Dialog schließen
@@ -51,7 +59,7 @@ function ValueTable() {
     return null;
   }
   /** @type {Record<ValueTab, string>} */
-  const counts = { score: Texts.valueTable.criteria(m.settings.criteria.length), attr: String(m.settings.attributes.length) };
+  const counts = { score: m.settings.utility ? Texts.valueTable.criteria(m.settings.criteria.length) : '', attr: String(m.settings.attributes.length) };
   return (
     <>
       {tabs.length > 1 ? (
@@ -61,7 +69,7 @@ function ValueTable() {
               key={t} type="button" role="tab" id={`valueTab-${t}`} aria-selected={t === shown} aria-pressed={t === shown}
               aria-controls="valuePanel" onClick={() => selectTab(t)}
             >
-              {t === 'score' ? Texts.valueTable.score : Texts.valueTable.attr}<small>{counts[t]}</small>
+              {t === 'score' ? names.tab : Texts.valueTable.attr}{counts[t] ? <small>{counts[t]}</small> : null}
             </button>
           ))}
         </div>

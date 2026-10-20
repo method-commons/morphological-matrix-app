@@ -110,3 +110,37 @@ test('Popover bleibt beim Weiterblättern offen, auch wenn dafür gescrollt wird
   await page.mouse.wheel(0, 300);
   await expect(pop).toBeHidden();
 });
+
+test('Kosten in der Tabelle: eigene Spalte vorne, auch ohne Nutzwert', async ({ page }) => {
+  // Nur Kosten: Knopf in den Einstellungen, Reiter „Kosten“ ohne Kriterien-Spalten
+  await menu(page, 'settings');
+  await page.check('#setCosts');
+  await page.click('#costTableBtn');
+  const dialog = page.locator('#valueDialog');
+  await expect(dialog.getByRole('tab')).toHaveText(['Kosten', 'Eigene Merkmale2']);
+  await expect(dialog.locator('.score-table thead th')).toHaveText(['Ausprägung', 'Kosten€']);
+  await expect(dialog.locator('input[data-r="0"][data-c="0"]')).toBeFocused();
+  await page.keyboard.type('20');
+  await page.keyboard.press('Enter');
+  await expect(dialog.locator('input[data-r="1"][data-c="0"]')).toBeFocused();
+  await page.click('#valueDone');
+
+  // Mit Nutzwert: Reiter „Bewertung“, Kosten vor den Kriterien, Tab springt zum ersten Kriterium
+  await page.check('#setUtility');
+  await expect(page.locator('#costTableBtn')).toHaveCount(0);
+  await page.locator('.criteria-name').first().fill('Geschmack');
+  await page.click('#addCriterionBtn');
+  await page.keyboard.type('Komfort');
+  await page.click('#scoreTableBtn');
+  await expect(dialog.getByRole('tab')).toHaveText(['Bewertung2 Kriterien', 'Eigene Merkmale2']);
+  await expect(dialog.locator('.score-table thead th')).toHaveText(['Ausprägung', 'Kosten€', 'Geschmack50 %', 'Komfort50 %', 'Nutzwertgewichtet']);
+  await expect(dialog.locator('input[data-r="0"][data-c="0"]')).toHaveValue('20');
+  await expect(dialog.locator('input[data-r="0"][data-c="0"]')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(dialog.locator('input[data-r="0"][data-c="1"]')).toBeFocused();
+  await expect(dialog.locator('input[data-r="0"][data-c="1"]')).toHaveAccessibleName('Geschmack von Durchlauferhitzer (0 bis 10)');
+  await page.click('#valueDone');
+  await page.click('#settingsDone');
+  await page.click('[data-mode="edit"]');
+  await expect(page.locator('.opt-cell.edit[data-oid="p1o1"] .metric-field input').first()).toHaveValue('20');
+});

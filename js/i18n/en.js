@@ -420,6 +420,10 @@ export const TextsEn = (() => {
       score: 'Utility',
       criteria: n => plural(n, 'criterion', 'criteria'),
       attr: 'Custom attributes',
+      rating: 'Rating',
+      ratingHeading: 'Costs and rating',
+      costs: 'Costs',
+      costsHeading: 'Costs per option',
     },
 
     // Utility by criteria
@@ -447,6 +451,10 @@ export const TextsEn = (() => {
       table: 'Table of all options …',
       tableHeading: 'Rating per criterion',
       tableHint: max => `Degree of fulfilment 0–${max} per option and criterion; empty fields count as not rated. Enter or ↓/↑ move to the next or previous row, Tab to the next criterion.`,
+      tableHintCosts: cur => `Costs per option in ${cur}; empty fields count as not entered. Enter or ↓/↑ move to the next or previous row.`,
+      tableHintBoth: (max, cur) => `Costs in ${cur} and degree of fulfilment 0–${max} per option and criterion; empty fields count as not entered or not rated. Enter or ↓/↑ move to the next or previous row, Tab to the next column.`,
+      openCostTable: 'Open cost table …',
+      cost: 'Costs',
       option: 'Option',
       weighted: 'weighted',
       paramWeight: w => `weight ${w}`,

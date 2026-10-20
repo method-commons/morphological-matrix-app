@@ -430,6 +430,10 @@ export const TextsDe = (() => {
       score: 'Nutzwert',
       criteria: n => plural(n, 'Kriterium', 'Kriterien'),
       attr: 'Eigene Merkmale',
+      rating: 'Bewertung',
+      ratingHeading: 'Kosten und Bewertung',
+      costs: 'Kosten',
+      costsHeading: 'Kosten je Ausprägung',
     },
 
     // Nutzwert nach Kriterien
@@ -457,6 +461,10 @@ export const TextsDe = (() => {
       table: 'Tabelle aller Ausprägungen …',
       tableHeading: 'Bewertung je Kriterium',
       tableHint: max => `Erfüllungsgrad 0–${max} je Ausprägung und Kriterium; leere Felder zählen als nicht bewertet. Enter bzw. ↓/↑ springen zur nächsten bzw. vorigen Zeile, Tab zum nächsten Kriterium.`,
+      tableHintCosts: cur => `Kosten je Ausprägung in ${cur}; leere Felder zählen als nicht angegeben. Enter bzw. ↓/↑ springen zur nächsten bzw. vorigen Zeile.`,
+      tableHintBoth: (max, cur) => `Kosten in ${cur} und Erfüllungsgrad 0–${max} je Ausprägung und Kriterium; leere Felder zählen als nicht angegeben bzw. nicht bewertet. Enter bzw. ↓/↑ springen zur nächsten bzw. vorigen Zeile, Tab zur nächsten Spalte.`,
+      openCostTable: 'Kostentabelle öffnen …',
+      cost: 'Kosten',
       option: 'Ausprägung',
       weighted: 'gewichtet',
       paramWeight: w => `Gewicht ${w}`,
