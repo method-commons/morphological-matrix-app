@@ -43,6 +43,9 @@
   .score-table .score-param th { background: var(--surface-2); font-weight: 650; }
   .score-table .score-param small { margin-left: 6px; font-weight: 400; color: var(--muted); }
   .score-table .score-cell { width: 76px; }
+  /* Kosten als erste Spalte, von den Kriterien abgesetzt */
+  .score-table .cost-col:not(:last-child) { border-right: 1px solid var(--border); }
+  .score-table thead th.cost-col { text-align: right; }
   .attr-foot { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 
   /* Merkmale aus Vorlagen: aufklappbare Auswahl unter den Knöpfen */
