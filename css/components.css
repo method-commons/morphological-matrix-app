@@ -49,6 +49,7 @@
   .menu-list {
     position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
     min-width: 260px; padding: 6px;
+    max-width: calc(100vw - 2 * var(--gutter)); max-height: calc(100vh - 160px); overflow-y: auto;
     background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
     box-shadow: var(--shadow-lg);
   }

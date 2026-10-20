@@ -174,3 +174,19 @@ test('Meine Matrizen: Zustand je Matrix, „Nur in der Ablage“ öffnen, Lösch
   await page.click('#menuBtn');
   await expect(page.locator('[data-action="storage"]')).toContainText('nicht eingerichtet');
 });
+
+test('mobil: „Datei“ bleibt mit Statusanzeige und langem Titel rechts, das Menü im Bild', async ({ page }) => {
+  await fakeGitHub(page);
+  await setTitle(page, 'Kaffeemaschine – Konzeptstudie für den Workshop im Oktober');
+  await (await connect(page)).locator('[data-sync="finish"]').click();
+  await expect(page.locator('#syncStatus')).toHaveAttribute('data-status', /ok|pending|busy/);
+  for (const width of [430, 390, 360, 320]) {
+    await page.setViewportSize({ width, height: 760 });
+    await page.click('#menuBtn');
+    const list = await page.locator('#menuList').boundingBox();
+    expect(list.x, `Menü bei ${width} px`).toBeGreaterThanOrEqual(0);
+    expect(list.x + list.width).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await page.click('#menuBtn'); // wieder schließen
+  }
+});
