@@ -17,7 +17,7 @@ Aus der Liste:
 | 1 | Eingrenzen beim Kombinieren | Restzahlen je Ausprägung zur Auswahl des aktiven Konzepts (Worker) |
 | 2 | Lösungsraum als Liste | Dialog mit Festlegen per Klick, Filtern, Sortierung, „＋ Konzept“; Branch & Bound für große Räume (`js/solutions.js`) |
 | 6 | Kosten/Nutzen-Streudiagramm | Pareto-Front, im Vergleich und im Bericht |
-| 5 | Sensitivitätsanalyse | Ansicht „Stabilität“ im Konzeptvergleich: Kipppunkte je Kriterium (exakt, `js/sensitivity.js`), Gewichte ausprobieren mit Live-Rangfolge und Übernehmen; Satz im Bericht |
+| 5 | Sensitivitätsanalyse | Ansicht „Stabilität“ im Konzeptvergleich: Kipppunkte je Kriterium (exakt, `js/sensitivity.js`), Gewichte ausprobieren mit Live-Rangfolge und Übernehmen; Satz im Bericht; Ansicht immer sichtbar, ohne Voraussetzungen mit Erklärung und Checkliste |
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
 | 4 | Bewertung nach Kriterien | mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung; Bewertung im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV; Lösungsraum rechnet mit dem gewichteten Mittel (`js/scores.js`); Bewertungs- und Merkmal-Tabelle in einem Dialog mit Reitern, Kosten als erste Spalte der Bewertungstabelle – Datenformat 8 |

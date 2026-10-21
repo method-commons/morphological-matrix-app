@@ -1,7 +1,9 @@
 /*
  * Ansicht „Stabilität“ im Konzeptvergleich: oben die Kipppunkte je Kriterium (wer liegt bei
  * welchem Gewicht vorn), darunter Gewichte zum Ausprobieren mit Live-Rangfolge. Probegewichte
- * ändern die Matrix erst mit „Gewichte übernehmen“. Rechnung in js/sensitivity.js.
+ * ändern die Matrix erst mit „Gewichte übernehmen“. Solange Voraussetzungen fehlen, stehen hier
+ * eine kurze Erklärung und eine Checkliste mit Knöpfen zum jeweiligen Schritt. Rechnung in
+ * js/sensitivity.js.
  */
 import { useState } from 'preact/hooks';
 import { Model } from '../model.js';
@@ -9,6 +11,11 @@ import { Sensitivity } from '../sensitivity.js';
 import { Texts } from '../texts.js';
 import { Util } from '../util.js';
 import { mutate, prefs, useMatrix } from './core.js';
+import { addCriterion } from './criteria.jsx';
+import { $, openDialog } from './dom.jsx';
+import { openValueTable } from './value-table.jsx';
+
+const openSettings = () => openDialog($('#settingsDialog'));
 
 /** Kipppunkte je Kriterium mit Zusammenfassung. @param {{ m: Matrix }} props */
 function TipPoints({ m }) {
@@ -109,9 +116,68 @@ function TrialWeights({ m }) {
   );
 }
 
+/** Feste Vorschau (ohne echte Zahlen): Bänder in zwei Farben. */
+const PREVIEW = [[0.63, 0.37], [0.54, 0.46], [0.16, 0.84]];
+
+/** Ein Schritt der Checkliste. @param {{ done: boolean, title: string, detail: string, action?: { label: string, run: () => void } | null }} props */
+function Step({ done, title, detail, action }) {
+  return (
+    <li class={done ? 'is-done' : undefined}>
+      <span class="stab-check" aria-hidden="true">{done ? '✓' : ''}</span>
+      <span>{title}<small>{detail}</small></span>
+      {!done && action ? <button type="button" class="btn btn-small" onClick={action.run}>{action.label}</button> : null}
+    </li>
+  );
+}
+
+/** Erklärung und Checkliste, solange die Analyse noch nicht rechnen kann. @param {{ m: Matrix }} props */
+function Checklist({ m }) {
+  const list = Sensitivity.checklist(m);
+  const t = Texts.stability.check;
+  const missing = list.progress.filter(x => x.rated < x.total);
+  const rated = list.progress.length && list.progress[0].total;
+  const ratedDetail = !rated ? t.ratedNone
+    : missing.length ? missing.map(x => t.ratedMissing(Model.criterionLabel(x.criterion), x.rated, x.total)).join(' · ')
+      : t.ratedAll(rated);
+  const total = m.concepts.length;
+  return (
+    <div class="stab-intro">
+      <div>
+        <h3>{Texts.stability.introHeading}</h3>
+        <p>{Texts.stability.intro}</p>
+        <p class="stab-hint">{Texts.stability.introHint}</p>
+        <div class="stab-preview" aria-hidden="true">
+          <span class="stab-preview-tag">{Texts.stability.preview}</span>
+          {PREVIEW.map((parts, i) => (
+            <span key={i} class="stab-preview-band">{parts.map((w, j) => <span key={j} style={{ width: `${w * 100}%` }} />)}</span>
+          ))}
+        </div>
+      </div>
+      <div>
+        <p class="stab-steps">{Texts.stability.steps(list.open, 4)}</p>
+        <ul class="stab-checklist" id="stabilityChecklist">
+          <Step
+            done={list.utility} title={t.utility} detail={list.utility ? t.utilityOn(m.settings.utilityMax) : t.utilityOff}
+            action={{ label: t.openSettings, run: openSettings }}
+          />
+          <Step
+            done={list.criteria} title={t.criteria} detail={t.criteriaNow(m.settings.criteria.length)}
+            action={m.settings.utility ? { label: t.addCriterion, run: () => { openSettings(); addCriterion(); } } : null}
+          />
+          <Step
+            done={list.rated} title={t.rated} detail={ratedDetail}
+            action={m.settings.utility && rated ? { label: t.openTable, run: () => openValueTable('score') } : null}
+          />
+          <Step done={list.concepts} title={t.concepts} detail={t.conceptsNow(Sensitivity.candidates(m).length, total)} />
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 export function Stability() {
   const m = useMatrix();
-  if (!Sensitivity.available(m)) return null;
+  if (!Sensitivity.available(m)) return <Checklist m={m} />;
   return (
     <div class="stab">
       <TipPoints m={m} />

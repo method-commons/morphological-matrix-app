@@ -147,16 +147,18 @@ test('Kosten in der Tabelle: eigene Spalte vorne, auch ohne Nutzwert', async ({ 
 
 test('Stabilität: Kipppunkte je Kriterium, Gewichte ausprobieren und übernehmen', async ({ page }) => {
   await setupCriteria(page, ['Geschmack', 'Komfort']);
-  // Komfort nur für den Thermoblock (Kompakt-Espresso): 10
-  await page.click('#scoreTableBtn');
-  const dialog = page.locator('#valueDialog');
-  await dialog.locator('input[data-r="2"][data-c="1"]').fill('10');
-  await page.keyboard.press('Enter');
-  await page.click('#valueDone');
   await page.click('#settingsDone');
-
   await page.click('[data-compare-view="stability"]');
   const view = page.locator('#compareStability');
+  // Komfort ist noch nicht bewertet: Checkliste mit Knopf zur Bewertungstabelle
+  await expect(view.locator('#stabilityChecklist li:not(.is-done)')).toHaveCount(1);
+  await expect(view.locator('#stabilityChecklist li:not(.is-done)')).toContainText('Komfort: 0 von 12 bewertet');
+  await view.getByRole('button', { name: 'Bewertungstabelle …' }).click();
+  // Komfort für die gewählten Ausprägungen von Kompakt-Espresso und Smart Home: Thermoblock 10, sonst 0
+  const dialog = page.locator('#valueDialog');
+  for (const r of [1, 2, 5, 6, 8, 11, 13, 15, 16, 21]) await dialog.locator(`input[data-r="${r}"][data-c="1"]`).fill(r === 2 ? '10' : '0');
+  await page.keyboard.press('Enter');
+  await page.click('#valueDone');
   await expect(view.locator('#stabilitySummary')).toContainText('Kompakt-Espresso liegt vorn (4,88 vor 3,79 für Smart Home).');
   await expect(view.locator('.stab-text')).toHaveText([/ab 88,2\s%\sliegt Smart Home vorn/, /unter 11,8\s%\sliegt Smart Home vorn/]);
   await expect(view.locator('#stabilityRanking li .stab-concept')).toHaveText(['Kompakt-Espresso', 'Smart Home', 'Outdoor (verworfen)']);
@@ -176,4 +178,21 @@ test('Stabilität: Kipppunkte je Kriterium, Gewichte ausprobieren und übernehme
   await expect(view.locator('#stabilitySummary')).toContainText('Smart Home liegt vorn');
   await page.keyboard.press('Control+z');
   await expect(view.locator('#stabilitySummary')).toContainText('Kompakt-Espresso liegt vorn');
+});
+
+test('Stabilität ohne Bewertung: Erklärung und Checkliste, Knöpfe führen zum Schritt', async ({ page }) => {
+  await page.click('[data-compare-view="stability"]');
+  const view = page.locator('#compareStability');
+  await expect(view).toContainText('Wie stabil ist die Rangfolge?');
+  await expect(view.locator('.stab-steps')).toHaveText('Noch 2 von 4 Schritten');
+  await expect(view.locator('#stabilityChecklist li.is-done')).toHaveText([/Jedes Kriterium bewertet/, /2 von 3 Konzepten \(1 verworfen\)/]);
+  await view.getByRole('button', { name: 'Einstellungen …' }).click();
+  await expect(page.locator('#settingsDialog')).toBeVisible();
+  await page.check('#setUtility');
+  await page.click('#settingsDone');
+  await expect(view.locator('.stab-steps')).toHaveText('Noch 1 von 4 Schritten');
+  // „Kriterium hinzufügen …“ öffnet die Einstellungen mit dem neuen Kriterium im Fokus
+  await view.getByRole('button', { name: 'Kriterium hinzufügen …' }).click();
+  await expect(page.locator('.criteria-name').last()).toBeFocused();
+  await expect(page.locator('.criteria-name')).toHaveCount(2);
 });

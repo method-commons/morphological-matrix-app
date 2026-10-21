@@ -8,7 +8,6 @@ import { render as mount } from 'preact';
 import { useLayoutEffect } from 'preact/hooks';
 import { Evaluation } from '../evaluation.js';
 import { Model } from '../model.js';
-import { Sensitivity } from '../sensitivity.js';
 import { Texts } from '../texts.js';
 import { addCategory, addParameter, changeScale, changeSetting, generateConcept } from './actions.js';
 import { Icon } from './components.jsx';
@@ -163,7 +162,7 @@ function CompareSection() {
   // „Kosten/Nutzen“ nur mit Kosten und Nutzwert; sonst (und beim Drucken) die Tabelle
   const scatterOk = state.settings.costs && state.settings.utility;
   /** @type {Array<NonNullable<TabPrefs['compareView']>>} */
-  const views = ['table', 'chart', ...(scatterOk ? /** @type {const} */ (['scatter']) : []), ...(Sensitivity.available(state) ? /** @type {const} */ (['stability']) : [])];
+  const views = ['table', 'chart', ...(scatterOk ? /** @type {const} */ (['scatter']) : []), /** @type {const} */ ('stability')];
   const pref = prefs.compareView || 'table';
   const view = printing || !views.includes(pref) ? 'table' : pref;
   const VIEW_TEXT = {

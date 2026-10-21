@@ -3,7 +3,8 @@
  * im Konzeptvergleich, Satz im Bericht). Der Nutzwert eines Konzepts ist linear in den Anteilen
  * der Kriterien: U = Σ Anteil × Wert je Kriterium. Verschiebt man den Anteil eines Kriteriums und
  * lässt die übrigen im gleichen Verhältnis, ist jeder Nutzwert eine Gerade – die Kipppunkte sind
- * die Schnittpunkte. Verworfene Konzepte zählen für die Kipppunkte nicht. Exportiert `Sensitivity`.
+ * die Schnittpunkte. Verworfene Konzepte zählen für die Kipppunkte nicht. Solange Voraussetzungen
+ * fehlen, zeigt die Ansicht eine Checkliste (`checklist`). Exportiert `Sensitivity`.
  */
 import { Evaluation } from './evaluation.js';
 import { Model } from './model.js';
@@ -30,8 +31,38 @@ export const Sensitivity = (() => {
   /** Konzepte, die für die Kipppunkte zählen (nicht verworfen). @param {Matrix} m */
   const candidates = m => m.concepts.filter(c => c.status !== 'dropped');
 
-  /** Ob die Ansicht sinnvoll ist: Nutzwert mit mehreren Kriterien, mindestens zwei Konzepte. @param {Matrix} m */
-  const available = m => m.settings.utility && m.settings.criteria.length > 1 && candidates(m).length > 1;
+  /**
+   * Bewertungsstand je Kriterium mit Gewicht: wie viele der gewählten Ausprägungen der nicht
+   * verworfenen Konzepte einen Wert haben (je Konzept und Parameter gezählt).
+   * @param {Matrix} m @returns {Array<{ criterion: MatrixCriterion, rated: number, total: number }>}
+   */
+  function ratingProgress(m) {
+    const picks = candidates(m).flatMap(c => m.parameters.map(p => Model.selectedOption(p, c)).filter(o => o != null));
+    return Evaluation.criterionShares(m).filter(({ share }) => share > 0).map(({ c }) => ({
+      criterion: c,
+      rated: picks.filter(o => /** @type {MatrixOption} */ (o).scores[c.id] != null).length,
+      total: picks.length,
+    }));
+  }
+
+  /**
+   * Voraussetzungen der Ansicht als Checkliste (automatisch geprüft).
+   * @param {Matrix} m
+   * @returns {{ utility: boolean, criteria: boolean, rated: boolean, concepts: boolean, progress: ReturnType<typeof ratingProgress>, open: number }}
+   */
+  function checklist(m) {
+    const progress = ratingProgress(m);
+    const items = {
+      utility: m.settings.utility,
+      criteria: m.settings.criteria.length > 1,
+      rated: progress.length > 0 && progress.every(x => x.total > 0 && x.rated === x.total),
+      concepts: candidates(m).length > 1,
+    };
+    return { ...items, progress, open: Object.values(items).filter(done => !done).length };
+  }
+
+  /** Ob die Ansicht rechnet: alle Punkte der Checkliste erledigt. @param {Matrix} m */
+  const available = m => checklist(m).open === 0;
 
   /** Gespeicherte Gewichte der Kriterien. @param {Matrix} m @returns {Weights} */
   const savedWeights = m => Object.fromEntries(m.settings.criteria.map(c => [c.id, c.weight]));
@@ -157,5 +188,5 @@ export const Sensitivity = (() => {
     return `${lead} ${tip}`;
   }
 
-  return { CLOSE, candidates, available, savedWeights, sharesOf, profile, ranking, bands, analyze, rowText, summary };
+  return { CLOSE, candidates, ratingProgress, checklist, available, savedWeights, sharesOf, profile, ranking, bands, analyze, rowText, summary };
 })();
