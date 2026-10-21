@@ -144,3 +144,36 @@ test('Kosten in der Tabelle: eigene Spalte vorne, auch ohne Nutzwert', async ({ 
   await page.click('[data-mode="edit"]');
   await expect(page.locator('.opt-cell.edit[data-oid="p1o1"] .metric-field input').first()).toHaveValue('20');
 });
+
+test('Stabilität: Kipppunkte je Kriterium, Gewichte ausprobieren und übernehmen', async ({ page }) => {
+  await setupCriteria(page, ['Geschmack', 'Komfort']);
+  // Komfort nur für den Thermoblock (Kompakt-Espresso): 10
+  await page.click('#scoreTableBtn');
+  const dialog = page.locator('#valueDialog');
+  await dialog.locator('input[data-r="2"][data-c="1"]').fill('10');
+  await page.keyboard.press('Enter');
+  await page.click('#valueDone');
+  await page.click('#settingsDone');
+
+  await page.click('[data-compare-view="stability"]');
+  const view = page.locator('#compareStability');
+  await expect(view.locator('#stabilitySummary')).toContainText('Kompakt-Espresso liegt vorn (4,88 vor 3,79 für Smart Home).');
+  await expect(view.locator('.stab-text')).toHaveText([/ab 88,2\s%\sliegt Smart Home vorn/, /unter 11,8\s%\sliegt Smart Home vorn/]);
+  await expect(view.locator('#stabilityRanking li .stab-concept')).toHaveText(['Kompakt-Espresso', 'Smart Home', 'Outdoor (verworfen)']);
+
+  // Komfort probeweise auf 0: Smart Home vorn, Matrix unverändert
+  await expect(page.locator('#stabilityApply')).toBeDisabled();
+  await page.getByLabel('Probegewicht von „Komfort“').fill('0');
+  await expect(view.locator('#stabilityRanking li .stab-concept').first()).toHaveText('Smart Home');
+  await expect(view.locator('#stabilityRanking li .stab-move').first()).toHaveText('▲ 1');
+  await expect(view.locator('#stabilitySummary')).toContainText('Kompakt-Espresso liegt vorn');
+  await page.click('#stabilityReset');
+  await expect(view.locator('#stabilityRanking li .stab-concept').first()).toHaveText('Kompakt-Espresso');
+
+  // Übernehmen ändert die Gewichte (rückgängig machbar)
+  await page.getByLabel('Probegewicht von „Komfort“').fill('0');
+  await page.click('#stabilityApply');
+  await expect(view.locator('#stabilitySummary')).toContainText('Smart Home liegt vorn');
+  await page.keyboard.press('Control+z');
+  await expect(view.locator('#stabilitySummary')).toContainText('Kompakt-Espresso liegt vorn');
+});
