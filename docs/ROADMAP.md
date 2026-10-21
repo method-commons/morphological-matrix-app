@@ -17,6 +17,7 @@ Aus der Liste:
 | 1 | Eingrenzen beim Kombinieren | Restzahlen je Ausprägung zur Auswahl des aktiven Konzepts (Worker) |
 | 2 | Lösungsraum als Liste | Dialog mit Festlegen per Klick, Filtern, Sortierung, „＋ Konzept“; Branch & Bound für große Räume (`js/solutions.js`) |
 | 6 | Kosten/Nutzen-Streudiagramm | Pareto-Front, im Vergleich und im Bericht |
+| 5 | Sensitivitätsanalyse | Ansicht „Stabilität“ im Konzeptvergleich: Kipppunkte je Kriterium (exakt, `js/sensitivity.js`), Gewichte ausprobieren mit Live-Rangfolge und Übernehmen; Satz im Bericht |
 | 7 | Status je Konzept | Entwurf, Favorit, verworfen (mit Grund), gewählt – Datenformat 6 |
 | 9 | Bericht / Export-Dialog | HTML und Markdown (`js/report.js`), CSV, Drucken |
 | 4 | Bewertung nach Kriterien | mehrere gewichtete Kriterien statt eines Nutzwerts je Ausprägung; Bewertung im Popover und in einer Tabelle, Aufschlüsselung im Vergleich, Bericht und CSV; Lösungsraum rechnet mit dem gewichteten Mittel (`js/scores.js`); Bewertungs- und Merkmal-Tabelle in einem Dialog mit Reitern, Kosten als erste Spalte der Bewertungstabelle – Datenformat 8 |
@@ -26,7 +27,6 @@ Aus der Liste:
 ## Offen
 
 - **3 – Mehrfachwahl je Parameter:** Varianten bzw. Lösungsfamilien („Mahlwerk A *oder* B“). Ändert das Datenformat und berührt Bewertung, Verträglichkeiten, Vergleich und Export – großer Aufwand.
-- **5 – Sensitivitätsanalyse:** Wie stabil ist die Rangfolge, wenn sich Gewichte ändern? Schieberegler mit Live-Rangfolge oder „Rang kippt ab Gewicht x“. Mittlerer Aufwand; mit den Kriterien (4, umgesetzt) jetzt aussagekräftiger.
 - **8 – Stände festhalten:** benannte Versionen einer Matrix („vor Workshop“ / „nach Workshop“) mit Vergleich der Unterschiede. Mittlerer Aufwand.
 - **10 – Abstimmen im Team:** Punkte an Ausprägungen oder Konzepte vergeben und zusammenfassen. Ohne Server nur über Teilen-Links, die zusammengeführt werden.
 
@@ -43,6 +43,11 @@ Aus der Liste:
 - Diagramm mit frei wählbaren Achsen und Quadranten (Wert vs. Aufwand als Grafik) – vorerst nicht nötig, die Stufen-Vorlage deckt den Bedarf.
 - Eigene Vorlagen: „Als Vorlage speichern“ an einem Merkmal, gespeichert im Browser und im Backup.
 - **Berechnete Merkmale:** ein Merkmal, dessen Wert je Ausprägung per Formel aus anderen Merkmalen entsteht – z. B. RICE (Reach × Impact × Confidence ÷ Effort) oder eigene gewichtete Wertungen. Größerer Schritt: ändert das Datenformat (Formel, Verweise auf andere Merkmale, Zyklen ausschließen) und berührt Zusammenfassung, Sortierung und Lösungsraum. RICE als reine Vorlage (vier getrennte Merkmale) wurde bewusst nicht aufgenommen: Ohne Berechnung entsteht kein RICE-Wert, und für Alternativen je Parameter deckt Wert/Aufwand den Kern bereits ab.
+
+## Ideen für Folgeschritte zur Stabilität
+
+- Gewichte der Parameter variieren (Umschalter „Kriterien | Parameter“) – dann auch mit nur einem Kriterium sinnvoll.
+- Mehrere Gewichte gleichzeitig (z. B. Monte-Carlo: wie oft liegt welches Konzept vorn).
 
 ## Ideen für Folgeschritte zum Lösungsraum
 

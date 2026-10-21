@@ -13,9 +13,10 @@ import { Examples } from '../../js/examples.js';
 import { Store } from '../../js/storage.js';
 import { Report } from '../../js/report.js';
 import { Attributes } from '../../js/attributes.js';
+import { Sensitivity } from '../../js/sensitivity.js';
 
 const app = {
-  Texts, Languages, Util, Model, Consistency, Evaluation, Ops, IO, Zip, Examples, Store, Report, Attributes,
+  Texts, Languages, Util, Model, Consistency, Evaluation, Ops, IO, Zip, Examples, Store, Report, Attributes, Sensitivity,
   /** Beispiel „Kaffeemaschine“ als frische Matrix (Grundlage vieler Tests). */
   example: () => Examples.loadFirst(),
 };

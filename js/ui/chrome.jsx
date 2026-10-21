@@ -8,6 +8,7 @@ import { render as mount } from 'preact';
 import { useLayoutEffect } from 'preact/hooks';
 import { Evaluation } from '../evaluation.js';
 import { Model } from '../model.js';
+import { Sensitivity } from '../sensitivity.js';
 import { Texts } from '../texts.js';
 import { addCategory, addParameter, changeScale, changeSetting, generateConcept } from './actions.js';
 import { Icon } from './components.jsx';
@@ -22,6 +23,7 @@ import { AttributesEditor } from './attribute-editor.jsx';
 import { openSolutions } from './solutions.jsx';
 import { CriteriaEditor } from './criteria.jsx';
 import { CompareScatter } from './render-scatter.jsx';
+import { Stability } from './stability.jsx';
 import { compareContent, CompareTable, CompareTools } from './compare.jsx';
 
 /** Bearbeiten / Kombinieren. */
@@ -161,13 +163,14 @@ function CompareSection() {
   // „Kosten/Nutzen“ nur mit Kosten und Nutzwert; sonst (und beim Drucken) die Tabelle
   const scatterOk = state.settings.costs && state.settings.utility;
   /** @type {Array<NonNullable<TabPrefs['compareView']>>} */
-  const views = ['table', 'chart', ...(scatterOk ? /** @type {const} */ (['scatter']) : [])];
+  const views = ['table', 'chart', ...(scatterOk ? /** @type {const} */ (['scatter']) : []), ...(Sensitivity.available(state) ? /** @type {const} */ (['stability']) : [])];
   const pref = prefs.compareView || 'table';
   const view = printing || !views.includes(pref) ? 'table' : pref;
   const VIEW_TEXT = {
     table: { text: Texts.ui.compareTable, title: undefined },
     chart: { text: Texts.ui.compareChart, title: Texts.ui.compareChartTitle },
     scatter: { text: Texts.ui.compareScatter, title: Texts.ui.compareScatterTitle },
+    stability: { text: Texts.ui.compareStability, title: Texts.ui.compareStabilityTitle },
   };
   return (
     <>
@@ -196,6 +199,7 @@ function CompareSection() {
             <table class="compare" id="compareTable" hidden={view !== 'table'}>{view === 'table' ? <CompareTable /> : null}</table>
             <div class="pc" id="compareChart" hidden={view !== 'chart'}>{view === 'chart' ? <CompareChart content={compareContent} /> : null}</div>
             <div class="pc sc" id="compareScatter" hidden={view !== 'scatter'}>{view === 'scatter' ? <CompareScatter content={compareContent} /> : null}</div>
+            <div class="pc" id="compareStability" hidden={view !== 'stability'}>{view === 'stability' ? <Stability /> : null}</div>
           </>
         ) : null}
       </div>

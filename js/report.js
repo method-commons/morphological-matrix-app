@@ -9,6 +9,7 @@ import { Consistency } from './consistency.js';
 import { Evaluation } from './evaluation.js';
 import { Model } from './model.js';
 import { ScatterLayout } from './scatter-layout.js';
+import { Sensitivity } from './sensitivity.js';
 import { Texts } from './texts.js';
 import { Util } from './util.js';
 
@@ -274,6 +275,7 @@ footer { margin-top:40px; color:var(--muted); font-size:.78rem; }
         }).join('')}</tr>`);
       });
       out.push('</tbody></table></div>');
+      if (ctx.utility && Sensitivity.available(m)) out.push(`<p class="hint">${esc(Texts.stability.report(Sensitivity.summary(m)))}</p>`);
     }
 
     if (parts.chart && m.settings.costs && m.settings.utility && ctx.rows.length) {
@@ -417,6 +419,7 @@ footer { margin-top:40px; color:var(--muted); font-size:.78rem; }
         body.push([attrs[0][i].label, ...attrs.map(list => (list[i].text ? `${list[i].text}${list[i].warn ? ` ${list[i].warn}` : ''}` : '–'))]);
       });
       table([Texts.compare.parameter, ...ctx.rows.map(f => Model.nameOrUnnamed(f.concept))], body);
+      if (ctx.utility && Sensitivity.available(m)) out.push(mdText(Texts.stability.report(Sensitivity.summary(m))), '');
     }
     if (parts.matrix && m.parameters.length) {
       out.push(`## ${Texts.report.sections.matrix}`, '');
