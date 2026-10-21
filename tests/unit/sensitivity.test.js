@@ -35,6 +35,26 @@ test('Verfügbar nur mit Nutzwert, mehreren Kriterien und zwei nicht verworfenen
   assert.equal(Sensitivity.available(one), false);
 });
 
+test('Checkliste: Nutzwert, Kriterien, Bewertung der gewählten Ausprägungen, Konzepte', () => {
+  const start = Sensitivity.checklist(example());
+  assert.deepEqual([start.utility, start.criteria, start.rated, start.concepts, start.open], [false, false, true, true, 2]);
+  // Zweites Kriterium ohne Werte: gezählt werden die 12 gewählten Ausprägungen der beiden nicht verworfenen Konzepte
+  const m = rated();
+  m.parameters.forEach(p => p.options.forEach(o => { delete o.scores.k; }));
+  m.parameters[0].options[2].scores.k = 5; // Thermoblock (Kompakt-Espresso)
+  const list = Sensitivity.checklist(m);
+  assert.equal(list.rated, false);
+  assert.deepEqual(list.progress.map(x => [x.criterion.name, x.rated, x.total]), [['Geschmack', 12, 12], ['Komfort', 1, 12], ['Nachhaltigkeit', 12, 12]]);
+  assert.equal(Sensitivity.available(m), false);
+  // Kriterium mit Gewicht 0 zählt nicht
+  m.settings.criteria[1].weight = 0;
+  assert.equal(Sensitivity.available(m), true);
+  // Ohne gewählte Ausprägungen ist nichts bewertet
+  const empty = rated();
+  empty.concepts.forEach(c => { c.selections = {}; });
+  assert.equal(Sensitivity.checklist(empty).rated, false);
+});
+
 test('Nutzwert je Kriterium und Rangfolge wie Evaluation.conceptUtility', () => {
   const m = rated();
   assert.deepEqual(Object.values(Sensitivity.profile(m, m.concepts[0])).map(r2), [7.25, 6.25, 7.08]);

@@ -40,7 +40,7 @@ export const multiCriteria = m => m.settings.utility && m.settings.criteria.leng
 
 // ---------- Kriterien (Bewertungseinstellungen) ----------
 
-function addCriterion() {
+export function addCriterion() {
   const list = state.settings.criteria;
   // Neues Kriterium zählt so viel wie ein durchschnittliches
   const weight = Math.round(list.reduce((s, c) => s + c.weight, 0) / list.length) || 100;
