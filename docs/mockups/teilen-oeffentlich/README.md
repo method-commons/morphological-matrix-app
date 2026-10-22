@@ -7,7 +7,8 @@ Ergänzt das umgesetzte [Teilen zum Ansehen über geheime Gists](../teilen/READM
 
 Die Bilder sind **Screenshots der echten App mit eingerichteter Ablage** (GitHub-API nachgebildet) und
 eingeblendetem Entwurf (gekennzeichnet mit „Entwurf“ bzw. gelb gestrichelt). Matrix: Beispiel „Kaffeemaschine“;
-Namen, Zeiten und Links sind erfunden.
+Namen, Zeiten und Links sind erfunden. Freigegeben mit den Entscheidungen wie empfohlen (unten); umgesetzt mit kleinen Abweichungen
+(Empfänger-Leiste ohne Namen des festen Stands, Hinweis „Teilen beenden“ kürzer).
 
 | # | Ansicht | Datei |
 |---|---------|-------|
@@ -43,7 +44,7 @@ Bilder neu erzeugen: `npx vite build && npx vite preview &`, dann `node docs/moc
 
 Geprüft: `raw.githubusercontent.com` antwortet mit `access-control-allow-origin: *` und `cache-control: max-age=300`.
 
-## Entscheidungen (offen, mit Empfehlung)
+## Entscheidungen (getroffen wie empfohlen)
 
 1. **Öffentliches Repo: Link direkt, ohne Gist?** – Empfehlung: **ja** (kein zusätzliches Recht, kein zweiter Speicherort).
 2. **Fester Stand** (benannte Version) zusätzlich zum aktuellen? – Empfehlung: **ja**, im Teilen-Dialog und als „Link kopieren“ in „Versionen …“.
@@ -52,4 +53,4 @@ Geprüft: `raw.githubusercontent.com` antwortet mit `access-control-allow-origin
 5. **Gist trotz öffentlichem Repo** anbieten (z. B. damit „Teilen beenden“ möglich ist)? – Empfehlung: **nein** – im öffentlichen Repo schützt das Beenden nichts.
 6. **Wechsel der Sichtbarkeit:** Ein vorhandenes Gist bleibt, wenn das Repo öffentlich wird (beenden über „Teilen …“); wird ein Repo privat, enden `#p=`-Links – Empfehlung: **so lassen**, im Dialog erklären.
 
-Nächster Schritt nach „Ja“: Kern (`fetchPublic`, `#p=`-Link, Weiche im Teilen-Dialog, Versionen), dann die fünf Apps (`#p=` neben `#g=`).
+Umgesetzt im Kern `0.5.0` (`fetchPublic`, `sharedLink`, Weiche im Teilen-Dialog, „Link kopieren“ in „Versionen …“) und in allen fünf Apps (`#p=` neben `#g=`, E2E `share-public.spec.js`).
