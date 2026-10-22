@@ -75,6 +75,7 @@ export function loadSync() {
       onOpenDoc: openDoc,
       toast,
       preselect: await pristineExamples(),
+      // früherer oder geteilter Stand: nur lesend über der aktiven Matrix, ohne zu speichern
       onPreview: (/** @type {any} */ p) => { if (p) showPreview(p.data); else endPreview(); },
     });
     setPreviewEndListener(() => ui.endPreview());
@@ -118,6 +119,23 @@ export function updateMenuHint() {
 /** Menü „Ablage …“: einrichten bzw. Übersicht. */
 export async function openStorage() {
   (await loadSync()).openStorage();
+}
+
+/** Menü „Teilen …“: Link zum Ansehen (ohne Ablage: Hinweis zum Einrichten). */
+export async function openShare() {
+  (await loadSync()).openShare(docId);
+}
+
+/**
+ * Link `#g=…` eines geteilten Dokuments: nur lesend zeigen – es wird nichts gespeichert, weder im Browser noch in
+ * einer eingerichteten Ablage (erst „Als Kopie speichern“). Gibt `true` zurück, wenn die Adresse ein solcher Link war.
+ */
+export function openSharedFromHash() {
+  const gist = /^#g=([0-9a-f]{8,64})$/i.exec(location.hash)?.[1];
+  if (!gist) return false;
+  history.replaceState(null, '', location.pathname + location.search);
+  loadSync().then(ui => ui.openShared(gist));
+  return true;
 }
 
 /** Menü „Versionen …“ (ohne Ablage: Hinweis zum Einrichten). */

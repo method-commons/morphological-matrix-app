@@ -51,7 +51,8 @@ Chromium ist vorinstalliert; kein `playwright install`.
 - Übernahmen aus der Ablage: abgelehnt, solange die aktive Matrix ungespeicherte Änderungen hat (`hasUnsavedChanges`, dann meldet der Kern einen Konflikt), sonst sofort angezeigt (`onExternalDocChange`).
 - `resolve.dedupe: ['preact']` in `vite.config.js` – sonst zwei Preact-Instanzen (Hooks der Oberfläche brechen).
 - **Versionen:** früherer Stand nur lesend über `showPreview`/`endPreview` (`core.js`): `save`, `mutate`, Rückgängig und Eingaben (`beforeinput` in `fieldProps`) sind gesperrt, Tab-Wechsel beendet das Ansehen, Übernahmen aus der Ablage werden solange abgelehnt. Leiste `PreviewBar` in `#previewSlot`.
-- E2E: `tests/e2e/github.js` bildet die GitHub-API mit `page.route` nach (Dateien mit `sha`, Commits je Datei, Tags); genutzt von `sync.spec.js` und `versions.spec.js`.
+- **Teilen zum Ansehen:** Link `#g=<gist>` öffnet `openSharedFromHash` (`sync.jsx`, beim Start und bei `hashchange`) – nur lesend über `showPreview`, **nichts wird gespeichert**; erst „Als Kopie speichern“ (Kern) legt eine Matrix an.
+- E2E: `tests/e2e/github.js` bildet die GitHub-API mit `page.route` nach (Dateien mit `sha`, Commits je Datei, Tags, geheime Gists; `fakeGitHub(page, { gh })` teilt den Zustand mit einer zweiten Seite); genutzt von `sync.spec.js`, `versions.spec.js` und `share.spec.js`.
 
 ## Bekannte Fallstricke
 

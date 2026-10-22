@@ -15,7 +15,7 @@ import { activateTab, openInTab, openNewDoc, tabById } from './tabs.jsx';
 import { Util } from '../util.js';
 import { IconButton } from './components.jsx';
 import { render as mount } from 'preact';
-import { openStorage, openVersions, setLibraryListener, syncChanged, syncRemoved, syncUI } from './sync.jsx';
+import { openShare, openSharedFromHash, openStorage, openVersions, setLibraryListener, syncChanged, syncRemoved, syncUI } from './sync.jsx';
 
 // ---------- Import / Export / Teilen ----------
 
@@ -40,6 +40,7 @@ export function importJson(file) {
 
 /** Öffnet eine per Link geteilte Matrix als neue Matrix in einem neuen App-Tab. */
 export function loadFromHash() {
+  if (openSharedFromHash()) return;
   try {
     const next = IO.decodeShareHash(location.hash);
     if (!next) return;
@@ -268,6 +269,7 @@ export const MENU_ACTIONS = {
   open: openLibrary,
   storage: openStorage,
   versions: openVersions,
+  share: openShare,
   settings: openSettings,
   constraints: openConsDialog,
   'export-json': exportJson,
