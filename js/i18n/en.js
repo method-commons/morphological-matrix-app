@@ -46,7 +46,6 @@ export const TextsEn = (() => {
         importJson: 'Open JSON …',
         export: 'Export …',
         exportHint: 'Report, CSV, PDF',
-        share: 'Copy share link',
         language: 'Language',
       },
       matrixHeading: 'Matrix',
@@ -183,7 +182,6 @@ export const TextsEn = (() => {
       exampleOpened: name => `Example ${q(name)} opened as a new matrix.`,
       opened: title => `${q(title)} opened.`,
       sharedOpened: title => `Shared matrix ${q(title)} opened as a new matrix.`,
-      linkCopied: 'Link copied to the clipboard.',
       generated: name => `Concept ${q(name)} created.`,
       generatedPartial: (name, skipped, missing) =>
         `Concept ${q(name)} created – ${skipped} ${skipped === 1 ? 'parameter was' : 'parameters were'} left without a selection because ${missing} is missing there.`,
@@ -195,7 +193,6 @@ export const TextsEn = (() => {
 
     prompt: {
       newCategory: 'Name of the new category:',
-      shareLink: 'Share link (copy with Ctrl+C):',
       rescale: (oldMax, max) => `Convert existing utility scores from the 0–${oldMax} scale to 0–${max}?\n\n`
         + 'OK: convert (e.g. 7 out of 10 becomes 3.5 out of 5)\nCancel: keep the values unchanged',
       deleteMatrix: title => `Permanently delete matrix ${q(title)}?`,

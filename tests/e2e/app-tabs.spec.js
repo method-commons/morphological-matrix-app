@@ -1,4 +1,4 @@
-import { test, expect, menu, setTitle, tabMenu, APP_URL } from './fixtures.js';
+import { test, expect, setTitle, tabMenu, APP_URL, openLinkFor } from './fixtures.js';
 
 const appTabs = page => page.locator('.app-tab');
 const tabTitles = page => page.locator('.app-tab').evaluateAll(els =>
@@ -109,9 +109,7 @@ test('Tabs lassen sich per Ziehen umsortieren', async ({ page }) => {
 
 test('Geteilter Link öffnet einen neuen Tab', async ({ page, context }) => {
   await setTitle(page, 'Geteilt');
-  await page.evaluate(() => { navigator.clipboard.writeText = async t => { window.__copied = t; }; });
-  await menu(page, 'share');
-  const link = await page.evaluate(() => window.__copied);
+  const link = await openLinkFor(page, 'Geteilt');
   const other = await context.newPage();
   await other.goto(link);
   // Der neue Browser-Tab übernimmt die zuletzt geöffneten App-Tabs und ergänzt die geteilte Matrix

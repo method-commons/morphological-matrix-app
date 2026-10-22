@@ -51,7 +51,6 @@ export const TextsDe = (() => {
         importJson: 'JSON öffnen …',
         export: 'Exportieren …',
         exportHint: 'Bericht, CSV, PDF',
-        share: 'Link zum Teilen kopieren',
         language: 'Sprache',
       },
       matrixHeading: 'Matrix',
@@ -190,7 +189,6 @@ export const TextsDe = (() => {
       exampleOpened: name => `Beispiel ${q(name)} als neue Matrix geöffnet.`,
       opened: title => `${q(title)} geöffnet.`,
       sharedOpened: title => `Geteilte Matrix ${q(title)} als neue Matrix geöffnet.`,
-      linkCopied: 'Link in die Zwischenablage kopiert.',
       generated: name => `Konzept ${q(name)} erstellt.`,
       generatedPartial: (name, skipped, missing) =>
         `Konzept ${q(name)} erstellt – ${skipped} ${skipped === 1 ? 'Parameter blieb' : 'Parameter blieben'} ohne Auswahl, da dort ${missing} fehlt.`,
@@ -202,7 +200,6 @@ export const TextsDe = (() => {
 
     prompt: {
       newCategory: 'Name der neuen Kategorie:',
-      shareLink: 'Link zum Teilen (kopieren mit Strg+C):',
       rescale: (oldMax, max) => `Vorhandene Nutzwerte von der Skala 0–${oldMax} auf 0–${max} umrechnen?\n\n`
         + 'OK: umrechnen (z. B. wird 7 von 10 zu 3,5 von 5)\nAbbrechen: Werte unverändert lassen',
       deleteMatrix: title => `Matrix ${q(title)} endgültig löschen?`,

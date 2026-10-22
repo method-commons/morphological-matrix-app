@@ -8,7 +8,7 @@ Funktionen, abgeglichen mit dem Ablauf der morphologischen Methode.
 Grundlagen: Matrix mit Kategorien, Notizen und Suche · Verträglichkeiten (unverträglich / bedingt) mit
 Zählung der widerspruchsfreien Kombinationen (Web Worker) · Konzepte, auch automatisch erzeugt ·
 Bewertung mit Kosten, gewichtetem Nutzwert, Preis-Leistung und MoSCoW · Vergleich als Tabelle und
-Verlauf · Export, Teilen-Links, Backup, Druck · Deutsch/Englisch · App-Tabs.
+Verlauf · Export, Links `#m=…` öffnen (eigenes Teilen per Link im Oktober 2026 entfernt – Angleichung an die übrigen Apps), Backup, Druck · Deutsch/Englisch · App-Tabs.
 
 Aus der Liste:
 
@@ -28,7 +28,7 @@ Aus der Liste:
 
 - **3 – Mehrfachwahl je Parameter:** Varianten bzw. Lösungsfamilien („Mahlwerk A *oder* B“). Ändert das Datenformat und berührt Bewertung, Verträglichkeiten, Vergleich und Export – großer Aufwand.
 - **8 – Stände festhalten:** benannte Versionen einer Matrix („vor Workshop“ / „nach Workshop“) mit Vergleich der Unterschiede. Mittlerer Aufwand.
-- **10 – Abstimmen im Team:** Punkte an Ausprägungen oder Konzepte vergeben und zusammenfassen. Ohne Server nur über Teilen-Links, die zusammengeführt werden.
+- **10 – Abstimmen im Team:** Punkte an Ausprägungen oder Konzepte vergeben und zusammenfassen. Ohne Server nur über Links bzw. Dateien, die zusammengeführt werden; mit Ablage siehe Teilen im Konzept von method-commons/sync.
 
 ## Zurückgestellt (Entscheidung des Maintainers)
 
