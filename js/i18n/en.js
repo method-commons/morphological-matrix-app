@@ -40,6 +40,8 @@ export const TextsEn = (() => {
         examples: 'Examples …',
         storage: 'Storage …',
         versions: 'Versions …',
+        share: 'Share …',
+        shareHint: 'link for viewing',
         settings: 'Evaluation & attributes …',
         constraints: 'Compatibility …',
         exportJson: 'Save as JSON',

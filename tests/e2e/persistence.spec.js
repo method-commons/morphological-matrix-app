@@ -37,7 +37,8 @@ test('CSV-Export enthält Matrix und Konzepte (Excel-kompatibel)', async ({ page
 
 test('Link mit #m= (z. B. aus dem Skill) öffnet die Matrix als neue Matrix; kein Teilen im Menü', async ({ page, context }) => {
   await page.click('#menuBtn');
-  await expect(page.locator('[data-action="share"]')).toHaveCount(0);
+  await expect(page.locator('#menuList')).not.toContainText('Link zum Teilen kopieren');
+  await expect(page.locator('[data-action="share"]')).toContainText('Link zum Ansehen'); // neues Teilen über die Ablage
   await page.keyboard.press('Escape');
   await setTitle(page, 'Geteilte Matrix');
   const link = await openLinkFor(page, 'Geteilte Matrix');

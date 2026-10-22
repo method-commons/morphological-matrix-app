@@ -45,6 +45,8 @@ export const TextsDe = (() => {
         examples: 'Beispiele …',
         storage: 'Ablage …',
         versions: 'Versionen …',
+        share: 'Teilen …',
+        shareHint: 'Link zum Ansehen',
         settings: 'Bewertung & Merkmale …',
         constraints: 'Verträglichkeiten …',
         exportJson: 'Als JSON speichern',

@@ -183,6 +183,8 @@ function init() {
   saveWorkspace({ tabOnly: true });
   render();
   loadFromHash();
+  // Link in denselben Browser-Tab eingefügt (nur die Adresse nach # ändert sich)
+  window.addEventListener('hashchange', loadFromHash);
 }
 
 init();
