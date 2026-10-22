@@ -38,16 +38,6 @@ export function importJson(file) {
   reader.readAsText(file);
 }
 
-async function shareLink() {
-  const url = `${location.href.split('#')[0]}#m=${IO.encodeShare(state)}`;
-  try {
-    await navigator.clipboard.writeText(url);
-    toast(Texts.toast.linkCopied);
-  } catch (e) {
-    window.prompt(Texts.prompt.shareLink, url);
-  }
-}
-
 /** Öffnet eine per Link geteilte Matrix als neue Matrix in einem neuen App-Tab. */
 export function loadFromHash() {
   try {
@@ -283,5 +273,4 @@ export const MENU_ACTIONS = {
   'export-json': exportJson,
   'import-json': () => $('#importFile').click(),
   export: openExport,
-  share: shareLink,
 };

@@ -139,7 +139,7 @@ export const IO = (() => {
     return '\ufeff' + lines.map(l => l.join(Texts.meta.csvSeparator)).join('\r\n');
   }
 
-  /** Teil hinter `#m=` eines Teilen-Links. @param {Matrix} m */
+  /** Teil hinter `#m=` eines Links, der eine Matrix öffnet (erzeugt z. B. der Skill „morphologische-matrix“). @param {Matrix} m */
   const encodeShare = m => Util.toBase64Url(JSON.stringify(m));
 
   /**

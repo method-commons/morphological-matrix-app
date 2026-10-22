@@ -1,6 +1,6 @@
 # Datenformat einer Matrix
 
-Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON-Export, Teilen-Links (`#m=…`, Base64url-kodiertes JSON) und die mitgelieferten Beispiele (`data` in `examples/*.json`, siehe [`examples/README.md`](../examples/README.md)). Typdefinitionen für die Entwicklung stehen in [`types.d.ts`](../types.d.ts).
+Dieses Format wird verwendet für gespeicherte Matrizen (localStorage), den JSON-Export, Links, die eine Matrix öffnen (`#m=…`, Base64url-kodiertes JSON; erzeugt z. B. der Skill „morphologische-matrix“ – die App selbst erzeugt sie nicht mehr) und die mitgelieferten Beispiele (`data` in `examples/*.json`, siehe [`examples/README.md`](../examples/README.md)). Typdefinitionen für die Entwicklung stehen in [`types.d.ts`](../types.d.ts).
 
 **Aktuelle Version: 8** (`Model.SCHEMA_VERSION` in `js/model.js`)
 

@@ -83,3 +83,17 @@ export function storedMatrix(page) {
     return JSON.parse(localStorage.getItem('morphologische-matrix:doc:' + id)).data;
   });
 }
+
+/**
+ * Link `…/#m=…`, der die Matrix mit diesem Titel öffnet – wie ihn der Skill „morphologische-matrix“ erzeugt
+ * (die App selbst bietet kein Teilen per Link mehr an). Wartet, bis die Matrix gespeichert ist.
+ */
+export async function openLinkFor(page, title) {
+  await expect.poll(() => page.evaluate(t => Object.values(localStorage).some(v => v.includes(`"title":${JSON.stringify(t)}`)), title)).toBe(true);
+  return page.evaluate(t => {
+    const raw = Object.keys(localStorage).filter(k => k.startsWith('morphologische-matrix:doc:')).map(k => JSON.parse(localStorage.getItem(k)).data).find(d => d.title === t);
+    const bytes = new TextEncoder().encode(JSON.stringify(raw));
+    const b64 = btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return `${location.href.split('#')[0]}#m=${b64}`;
+  }, title);
+}

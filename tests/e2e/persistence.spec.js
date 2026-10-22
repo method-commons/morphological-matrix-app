@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { test, expect, menu, downloadText, setTitle, exportFile } from './fixtures.js';
+import { test, expect, menu, downloadText, setTitle, exportFile, openLinkFor } from './fixtures.js';
 
 test('JSON-Export und -Import ergeben dieselbe Matrix', async ({ page }) => {
   const exported = await downloadText(page, 'export-json');
@@ -35,15 +35,12 @@ test('CSV-Export enthält Matrix und Konzepte (Excel-kompatibel)', async ({ page
   expect(text).toContain('"Kompakt-Espresso";"Thermoblock";"Vibrationspumpe"');
 });
 
-test('Teilen-Link öffnet die Matrix als neue Matrix', async ({ page, context }) => {
+test('Link mit #m= (z. B. aus dem Skill) öffnet die Matrix als neue Matrix; kein Teilen im Menü', async ({ page, context }) => {
+  await page.click('#menuBtn');
+  await expect(page.locator('[data-action="share"]')).toHaveCount(0);
+  await page.keyboard.press('Escape');
   await setTitle(page, 'Geteilte Matrix');
-  await page.evaluate(() => {
-    window.__copied = null;
-    navigator.clipboard.writeText = async t => { window.__copied = t; };
-  });
-  await menu(page, 'share');
-  const link = await page.evaluate(() => window.__copied);
-  expect(link).toContain('#m=');
+  const link = await openLinkFor(page, 'Geteilte Matrix');
   const other = await context.newPage();
   await other.goto(link);
   await expect(other.locator('#title')).toHaveValue('Geteilte Matrix');

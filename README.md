@@ -78,7 +78,7 @@ npm run preview  # gebaute App ansehen, http://localhost:4173/
 - **Mehrere Browser-Tabs:** Weiterhin möglich – jeder Browser-Tab hat seine eigenen App-Tabs. Ändert ein anderer Browser-Tab eine hier geöffnete Matrix, wird sie übernommen; inaktive Tabs werden dabei mit einem Punkt markiert.
 - **Speichern und Öffnen als JSON** (`Strg+S`) zum Weiterbearbeiten.
 - **Exportieren** (**Datei → Exportieren …**): ein Dialog fasst alle Formate zum Weitergeben zusammen – **Bericht als HTML** (eigenständige Datei, im Browser lesbar und als PDF druckbar), **Bericht als Markdown** (für Wikis, Confluence, GitHub), **Tabelle als CSV** (Excel-kompatibel) und **Drucken / PDF** der aktuellen Ansicht. Der Bericht enthält wählbar Problemstellung und Kennzahlen, die Konzepte mit Status, Begründung und Kennzahlen (verworfene auf Wunsch weggelassen), den Konzeptvergleich (mit dem Satz zur Stabilität der Rangfolge), das Kosten/Nutzen-Diagramm (nur HTML), die Matrix mit Notizen und die Verträglichkeiten – Ergebnisse zuerst, die Matrix als Grundlage danach; Texte in der Sprache der App. Format und Auswahl merkt sich der Browser.
-- Teilen per Link (die Matrix steckt komplett in der URL).
+- Öffnen per Link `…/#m=…` (die Matrix steckt komplett in der URL; erzeugt z. B. der Skill „morphologische-matrix“). Ein eigenes Teilen per Link bietet die App nicht mehr an – wie die übrigen Methoden-Apps; Teilen über die Ablage ist geplant.
 - Helles und dunkles Farbschema (folgt der Systemeinstellung).
 - **Deutsch und Englisch (US):** beim ersten Start nach der Browsersprache, umschaltbar unter **Datei → Sprache**. Zahlen, Währung, Datum, Zahleneingabe und CSV-Export folgen der Sprache (Deutsch: `1.234,5` und CSV mit Semikolon; Englisch: `1,234.5` und CSV mit Komma). Die Inhalte der Matrizen werden nicht übersetzt.
 
@@ -102,7 +102,7 @@ npm run preview  # gebaute App ansehen, http://localhost:4173/
 | `js/solutions.js`, `js/solutions-worker.js` | `Solutions` – Lösungsraum: widerspruchsfreie Kombinationen suchen, filtern und sortieren (Branch & Bound), ohne Texte und Modell; der Web Worker führt die Suche aus |
 | `js/evaluation.js` | `Evaluation` – Kosten, Nutzwert, Preis-Leistung, Prioritätsprofil, Kennzahlenbericht, automatische Konzepte (ohne DOM) |
 | `js/ops.js` | `Ops` – strukturelle Änderungen an einer Matrix: Parameter, Ausprägungen, Kategorien, Konzepte (ohne DOM) |
-| `js/io.js` | `IO` – JSON, CSV, Teilen-Links, Backup (ohne DOM) |
+| `js/io.js` | `IO` – JSON, CSV, Links `#m=…` öffnen, Backup (ohne DOM) |
 | `js/zip.js` | `Zip` – ZIP-Archive schreiben und lesen mit [fflate](https://github.com/101arrowz/fflate); wird erst beim Backup geladen (ohne DOM) |
 | `js/report.js` | `Report` – Bericht als HTML oder Markdown; wird erst beim Export geladen (ohne DOM) |
 | `js/scatter-layout.js` | `ScatterLayout` – Geometrie des Kosten/Nutzen-Diagramms (Skalen, Pareto-Treppe, Beschriftungen) für App und Bericht (ohne DOM) |
@@ -120,7 +120,7 @@ npm run preview  # gebaute App ansehen, http://localhost:4173/
 
 **Texte und Sprachen:** Alle Texte stehen je Sprache in `js/i18n/` – `index.html` enthält nur Schlüssel (`data-i18n` für Text, `data-i18n-html` für Text mit Formatierung, `data-i18n-attr="title:…;aria-label:…"` für Attribute), die beim Start gefüllt werden. Formulierungen ändern betrifft also nur die Sprachdateien. `en.js` muss dieselbe Struktur wie `de.js` haben; das prüfen die Typprüfung und ein Unit-Test (`tests/unit/i18n.test.js`, auch für alle Schlüssel aus `index.html`). Eine weitere Sprache: Datei `js/i18n/<code>.js` nach dem Muster von `en.js` anlegen, in `js/texts.js` importieren und in `Languages` eintragen sowie im Menü (`data-lang`) ergänzen. Inhalte der Beispiele sind Daten und stehen je Beispiel in einer eigenen JSON-Datei unter `examples/`.
 
-**Datenformat:** Gespeicherte Matrizen, JSON-Export und Teilen-Links tragen eine Formatversion; ältere Daten werden beim Öffnen automatisch umgewandelt, Daten aus einer neueren App-Version werden abgelehnt. Details in [`docs/DATENFORMAT.md`](docs/DATENFORMAT.md).
+**Datenformat:** Gespeicherte Matrizen, JSON-Export und Links `#m=…` tragen eine Formatversion; ältere Daten werden beim Öffnen automatisch umgewandelt, Daten aus einer neueren App-Version werden abgelehnt. Details in [`docs/DATENFORMAT.md`](docs/DATENFORMAT.md).
 
 **Stand und Ideen:** umgesetzte, offene und zurückgestellte Funktionen in [`docs/ROADMAP.md`](docs/ROADMAP.md); Hinweise für die Arbeit mit Claude Code in [`CLAUDE.md`](CLAUDE.md).
 
