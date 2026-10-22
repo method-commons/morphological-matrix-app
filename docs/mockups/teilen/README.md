@@ -7,7 +7,7 @@ nicht; Links `#m=…` (z. B. aus dem Skill „morphologische-matrix“) öffnet 
 
 Die Bilder sind **Screenshots der echten App mit eingerichteter Ablage** (GitHub-API nachgebildet) und
 eingeblendetem Entwurf (gekennzeichnet mit „Entwurf“ bzw. gelb gestrichelt). Matrix: Beispiel „Kaffeemaschine“;
-Namen, Zeiten und Link sind erfunden. **Noch nichts davon ist umgesetzt** (außer dem Entfernen des alten Teilens).
+Namen, Zeiten und Link sind erfunden. Freigegeben mit den Entscheidungen wie empfohlen (unten); Umsetzung im Kern, dann hier, dann in allen Apps.
 
 | # | Ansicht | Datei |
 |---|---------|-------|
@@ -29,6 +29,9 @@ Bilder neu erzeugen: `npx vite build && npx vite preview &`, dann `node docs/moc
 - **Empfänger:** Der Link (`…/#g=<gist-id>`) öffnet die App; sie lädt das Gist **ohne Anmeldung** und zeigt die Matrix
   mit allen Ansichten **nur zum Lesen** (wie die Vorschau früherer Stände). **Keine Live-Ansicht:** neue Stände über
   „Aktualisieren“ oder erneutes Öffnen. „Als Kopie speichern“ legt eine eigene Matrix im Browser an.
+- **Nichts automatisch speichern:** Das Öffnen eines Teilen-Links legt **nichts** im Browser oder in einer
+  eingerichteten Ablage an (sonst entstünde Datenmüll). Erst „Als Kopie speichern“ – bewusst – erzeugt ein Dokument;
+  „Schließen“ verwirft die Ansicht.
 - **Grenzen:** Wer den Link hat, kann die Matrix sehen (geheim ≠ privat). Bearbeiten durch andere ist nicht vorgesehen
   (bei GitHub nur für das ganze Repo möglich) – dafür später Supabase.
 
@@ -46,7 +49,7 @@ Bilder neu erzeugen: `npx vite build && npx vite preview &`, dann `node docs/moc
 Ablage-Repo in einer Organisation, braucht es ein zweites, persönliches Token nur für Gists. Die Gist-ID je Matrix
 merkt sich die App in der Merkliste der Ablage (nicht im Datenformat der Matrix).
 
-## Offene Entscheidungen
+## Entscheidungen (getroffen wie empfohlen)
 
 1. **Token mit Gists von Anfang an?** Vorbelegter Link fragt Gists immer mit an, oder nur auf Wunsch beim ersten Teilen? – Empfehlung: **immer** (ein Token, kein zweiter Gang zu GitHub); Repo in einer Organisation als Sonderfall mit zweitem Token.
 2. **Ort im Menü:** „Teilen …“ im Menü „Datei“ (Entwurf) und zusätzlich in „Meine Matrizen“? – Empfehlung: **Menü „Datei“**, in der Liste nur das Kennzeichen.
