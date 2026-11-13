@@ -150,6 +150,26 @@ export const Ops = (() => {
     return m.categories.length < before;
   }
 
+  /**
+   * Parameter an eine Stelle setzen: in Kategorie `cid` (null = ohne) vor den Parameter `before`,
+   * ohne `before` ans Ende der Kategorie. Gibt zurück, ob sich etwas geändert hat.
+   * @param {Matrix} m @param {string} pid @param {string | null} cid @param {string | null} before
+   */
+  function moveParameterTo(m, pid, cid, before) {
+    const p = param(m, pid);
+    if (!p || before === pid || (cid && !Model.categoryById(m, cid))) return false;
+    const old = m.parameters;
+    const rest = old.filter(x => x !== p);
+    let i = before ? rest.findIndex(x => x.id === before) : -1;
+    if (i < 0) i = rest.map(x => x.categoryId || null).lastIndexOf(cid || null) + 1 || rest.length;
+    rest.splice(i, 0, p);
+    const changed = (p.categoryId || null) !== (cid || null) || rest.some((x, k) => x !== old[k]);
+    p.categoryId = cid || null;
+    m.parameters = rest;
+    Model.resort(m);
+    return changed;
+  }
+
   /** @param {Matrix} m @param {string} pid @param {string | null} cid `null` = ohne Kategorie */
   function setParameterCategory(m, pid, cid) {
     const p = param(m, pid);
@@ -332,7 +352,7 @@ export const Ops = (() => {
     addAttribute, deleteAttribute, moveAttribute, setAttributeType, deleteLevel, addCriterion, deleteCriterion,
     addParameter, moveParameter, deleteParameter,
     addOption, moveOption, deleteOption, togglePriority,
-    addCategory, moveCategory, deleteCategory, setParameterCategory,
+    addCategory, moveCategory, deleteCategory, setParameterCategory, moveParameterTo,
     setConstraint,
     ensureActiveConcept, toggleSelection, addConcept, duplicateConcept, deleteConcept, randomizeActive, clearActive,
     changeScale,
