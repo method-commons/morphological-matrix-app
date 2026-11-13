@@ -23,6 +23,7 @@ import { $, focusField, shownColor } from './dom.jsx';
 import { NumberField } from './fields.jsx';
 import { multiCriteria, ScoreButton } from './criteria.jsx';
 import { scheduleLines } from './lines.js';
+import { startParameterDrag } from './reorder.js';
 import { NoteButton, NoteField, NoteMark, showNote } from './notes.jsx';
 import { searchClass, searchResult } from './search.js';
 import { Util } from '../util.js';
@@ -105,23 +106,49 @@ function ParameterRow({ p, pi, ctx }) {
   );
 }
 
+/**
+ * Griff zum Ziehen eines Parameters (nur mit Maus/Trackpad sichtbar); auf dem Griff verschieben
+ * ↑/↓ wie die Knöpfe der Werkzeugleiste.
+ * @param {{ pid: string, pi: number }} props
+ */
+function Grip({ pid, pi }) {
+  /** @param {KeyboardEvent} e */
+  const onKey = e => {
+    const dir = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
+    if (!dir || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    if (!Model.canMoveParameter(state, pi, dir)) return;
+    moveParameter(pi, dir);
+    /** @type {HTMLElement | null} */ (document.querySelector(`[data-dnd-param="${CSS.escape(pid)}"] .grip`))?.focus();
+  };
+  return (
+    <button
+      type="button" class="grip" title={Texts.matrix.dragParameter} aria-label={Texts.matrix.dragParameter}
+      onPointerDown={e => startParameterDrag(e, pid)} onKeyDown={onKey}
+    >⠿</button>
+  );
+}
+
 /** @param {{ p: MatrixParameter, pi: number, ctx: RowContext }} props */
 function ParameterEdit({ p, pi, ctx }) {
   const label = Model.parameterLabel(p, pi);
   return (
-    <div class={`param-cell${searchClass(ctx.found, p.id, null)}`} style={categoryStyle(p)} data-pid={p.id}>
-      <textarea
-        class="param-name autosize" rows={1} value={p.name}
-        placeholder={Texts.fallback.parameter(pi + 1)} aria-label={Texts.matrix.parameterName(pi + 1)} data-fid={`param:${p.id}`}
-        {...fieldProps(v => { p.name = v; })}
-        onKeyDown={e => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            if (p.options.length) focusField(`opt:${p.options[0].id}`);
-            else addOption(p.id);
-          }
-        }}
-      />
+    <div class={`param-cell${searchClass(ctx.found, p.id, null)}`} style={categoryStyle(p)} data-pid={p.id} data-dnd-param={p.id} data-dnd-cat={p.categoryId || ''}>
+      <div class="param-head">
+        <Grip pid={p.id} pi={pi} />
+        <textarea
+          class="param-name autosize" rows={1} value={p.name}
+          placeholder={Texts.fallback.parameter(pi + 1)} aria-label={Texts.matrix.parameterName(pi + 1)} data-fid={`param:${p.id}`}
+          {...fieldProps(v => { p.name = v; })}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              if (p.options.length) focusField(`opt:${p.options[0].id}`);
+              else addOption(p.id);
+            }
+          }}
+        />
+      </div>
       {showNote(p, p.id)
         ? <NoteField target={p} id={p.id} cls="param-note" placeholder={Texts.notes.paramPlaceholder} label={Texts.notes.paramLabel(label)} />
         : null}
@@ -423,7 +450,10 @@ function Band({ group, ctx }) {
   const index = k ? state.categories.indexOf(k) : -1;
   const label = Model.categoryLabel(k);
   return (
-    <div class={`cat-band${collapsed ? ' is-collapsed' : ''}${k ? '' : ' is-none'}`} style={{ '--k': categoryColor(k) }} data-cat-band={collapseKey(cid)}>
+    <div
+      class={`cat-band${collapsed ? ' is-collapsed' : ''}${k ? '' : ' is-none'}`} style={{ '--k': categoryColor(k) }} data-cat-band={collapseKey(cid)}
+      data-dnd-head={cid || ''} data-dnd-collapsed={collapsed ? '' : undefined}
+    >
       <button
         type="button" class="cat-toggle" aria-expanded={!collapsed}
         title={collapsed ? Texts.category.expand : Texts.category.collapse}

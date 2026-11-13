@@ -44,6 +44,26 @@
     field-sizing: content;
   }
   .param-name:hover { border-color: var(--border); }
+  /* Reihenfolge per Ziehen (reorder.js): Griff nur mit Maus/Trackpad auf breiten Bildschirmen */
+  .param-head { display: flex; align-items: flex-start; gap: 2px; }
+  .grip { display: none; }
+  @media (hover: hover) and (pointer: fine) and (min-width: 641px) {
+    .grip {
+      flex: none; display: grid; place-items: center; width: 18px; height: 28px; margin-left: -6px; padding: 0;
+      border: 0; border-radius: 5px; background: none; color: var(--muted); font-size: 14px; line-height: 1;
+      cursor: grab; touch-action: none; opacity: .35;
+    }
+    .param-cell:hover .grip, .grip:focus-visible { opacity: 1; }
+    .grip:hover { background: var(--surface-2); }
+    .grip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent); color: var(--accent); }
+  }
+  .dragging { opacity: .35; }
+  .drop-line { position: absolute; z-index: 4; height: 3px; margin-top: -1.5px; border-radius: 2px; background: var(--accent); pointer-events: none; }
+  .drag-tip {
+    position: fixed; z-index: 60; pointer-events: none; padding: 5px 8px; border-radius: 7px;
+    background: var(--text); color: var(--surface); font-size: 11.5px; font-weight: 600; white-space: nowrap; box-shadow: var(--shadow-lg);
+  }
+
   .param-name:focus { outline: none; border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px var(--accent-soft); }
   .param-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 6px; }
   .row-tools { display: flex; gap: 0; margin-left: -4px; }

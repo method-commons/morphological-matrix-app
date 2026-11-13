@@ -44,6 +44,10 @@ Aus der Liste:
 - Eigene Vorlagen: „Als Vorlage speichern“ an einem Merkmal, gespeichert im Browser und im Backup.
 - **Berechnete Merkmale:** ein Merkmal, dessen Wert je Ausprägung per Formel aus anderen Merkmalen entsteht – z. B. RICE (Reach × Impact × Confidence ÷ Effort) oder eigene gewichtete Wertungen. Größerer Schritt: ändert das Datenformat (Formel, Verweise auf andere Merkmale, Zyklen ausschließen) und berührt Zusammenfassung, Sortierung und Lösungsraum. RICE als reine Vorlage (vier getrennte Merkmale) wurde bewusst nicht aufgenommen: Ohne Berechnung entsteht kein RICE-Wert, und für Alternativen je Parameter deckt Wert/Aufwand den Kern bereits ab.
 
+## Ideen für Folgeschritte zur Reihenfolge
+
+- Ziehen am Griff (umgesetzt für Parameter, `js/ui/reorder.js`) auch für Ausprägungen innerhalb eines Parameters und für Kategorien.
+
 ## Ideen für Folgeschritte zur Stabilität
 
 - Gewichte der Parameter variieren (Umschalter „Kriterien | Parameter“) – dann auch mit nur einem Kriterium sinnvoll.

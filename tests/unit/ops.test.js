@@ -104,6 +104,28 @@ test('Kategorie eines Parameters setzen; unbekannte Kategorie wird abgelehnt', (
   assert.equal(m.parameters.find(p => p.id === pid).categoryId, null);
 });
 
+test('Parameter an eine Stelle ziehen: innerhalb und zwischen Kategorien', () => {
+  const m = kaffeemaschine();
+  const ids = () => plain(m.parameters.map(p => p.id));
+  const [k1, k2] = m.categories.map(k => k.id);
+  // Druckerzeugung hinter Kaffeezufuhr (Ende der eigenen Kategorie)
+  assert.equal(Ops.moveParameterTo(m, 'p2', k1, null), true);
+  assert.deepEqual(ids(), ['p1', 'p3', 'p2', 'p4', 'p5', 'p6']);
+  // Vor Bedienung in die zweite Kategorie: Kategorie und Stelle in einem Schritt
+  assert.equal(Ops.moveParameterTo(m, 'p2', k2, 'p4'), true);
+  assert.deepEqual(ids(), ['p1', 'p3', 'p2', 'p4', 'p5', 'p6']);
+  assert.equal(m.parameters.find(p => p.id === 'p2').categoryId, k2);
+  // Gleiche Stelle: keine Änderung; ungültige Angaben
+  assert.equal(Ops.moveParameterTo(m, 'p2', k2, 'p4'), false);
+  assert.equal(Ops.moveParameterTo(m, 'p2', k2, 'p2'), false);
+  assert.equal(Ops.moveParameterTo(m, 'p2', 'gibt-es-nicht', null), false);
+  assert.equal(Ops.moveParameterTo(m, 'gibt-es-nicht', k1, null), false);
+  // Ohne Kategorie: ans Ende hinter alle Kategorien
+  assert.equal(Ops.moveParameterTo(m, 'p1', null, null), true);
+  assert.deepEqual(ids(), ['p3', 'p2', 'p4', 'p5', 'p6', 'p1']);
+  assert.equal(m.parameters[5].categoryId, null);
+});
+
 test('Konzepte: Auswahl umschalten, aktives Konzept wird bei Bedarf angelegt', () => {
   const m = simple();
   Ops.toggleSelection(m, 'B', 'B1');
