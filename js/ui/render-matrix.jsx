@@ -437,6 +437,18 @@ function groupProgress(group, concept) {
 }
 
 /**
+ * Auswahl einer Kategorie als Text für den Tooltip, je Zeile „Parameter: Ausprägung“.
+ * @param {{ items: Array<{ p: MatrixParameter, pi: number }> }} group @param {MatrixConcept | null} concept
+ */
+function picksTitle(group, concept) {
+  if (!concept) return '';
+  return group.items.map(({ p, pi }) => {
+    const o = Model.selectedOption(p, concept);
+    return o ? `${Model.parameterLabel(p, pi)}: ${o.text.trim() || '–'}` : null;
+  }).filter(Boolean).join('\n');
+}
+
+/**
  * Kopfzeile einer Kategorie: Ein-/Ausklappen, Name (im Bearbeiten-Modus änderbar), Fortschritt.
  * @param {{ group: { cat: MatrixCategory | null, items: Array<{ p: MatrixParameter, pi: number }> }, ctx: RowContext }} props
  */
@@ -480,9 +492,10 @@ function Band({ group, ctx }) {
       )}
       <span class="cat-meta">{Texts.category.count(n)}</span>
       {found ? <SearchBadge group={group} found={found} /> : null}
-      {collapsed && !editing && picks.length
-        ? <span class="cat-picks">{picks.map(o => <span key={o.id}>{o.text.trim() || '–'}</span>)}</span>
-        : null}
+      {collapsed && !editing && picks.length ? (
+        // Eine Zeile, am Rand ausgeblendet; die vollständige Auswahl steht im Tooltip
+        <span class="cat-picks" title={picksTitle(group, active)}>{picks.map(o => <span key={o.id}>{o.text.trim() || '–'}</span>)}</span>
+      ) : null}
       <span class="cat-end">
         {!editing && active ? (
           <span class="cat-progress" title={Texts.category.progressTitle(Model.nameOrUnnamed(active))}>
