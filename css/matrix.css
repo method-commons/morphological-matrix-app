@@ -196,6 +196,9 @@
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--k) 9%, var(--surface));
     scroll-margin-top: 72px;
+    /* Das Band spannt über alle Spalten: ohne Eingrenzung bestimmte seine Breite (z. B. viele
+       lange Auswahl-Chips) die Breite aller Spalten mit */
+    contain: inline-size;
   }
   .cat-band:first-child { margin-top: 0; }
   .matrix.is-selecting .cat-band { margin-top: 2px; }
@@ -212,12 +215,19 @@
   .cat-band.is-collapsed .cat-chevron { transform: rotate(-45deg); }
   .cat-title { font-weight: 700; letter-spacing: -.005em; cursor: pointer; }
   .cat-meta { font-size: .75rem; color: var(--muted); }
-  .cat-picks { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+  /* Eingeklappt: Auswahl in einer Zeile, am rechten Rand weich ausgeblendet */
+  .cat-picks {
+    flex: 1 1 0; display: flex; gap: 4px; min-width: 0; overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+  }
   .cat-picks span {
+    flex: none; white-space: nowrap;
     padding: 1px 7px; border: 1px solid var(--border); border-radius: 999px;
     background: var(--surface); font-size: .74rem; color: var(--text-2);
   }
-  .cat-end { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  /* Fortschritt bleibt bei breiten, waagerecht scrollenden Matrizen am sichtbaren rechten Rand */
+  .cat-end { position: sticky; right: 8px; margin-left: auto; display: flex; align-items: center; gap: 6px; }
   /* Beim Bearbeiten Werkzeuge direkt neben dem Namen – auch bei breiten, scrollenden Matrizen sichtbar */
   .matrix.is-editing .cat-end { margin-left: 8px; }
   .cat-progress { font-size: .75rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }

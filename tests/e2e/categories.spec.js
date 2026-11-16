@@ -82,3 +82,31 @@ test('Vergleich und CSV sind nach Kategorien gegliedert; Druck klappt alles aus'
   await page.evaluate(() => dispatchEvent(new Event('afterprint')));
   await expect(paramCells(page)).toHaveCount(0);
 });
+
+test('Eingeklappte Kategorie mit langer Auswahl: eine Zeile, Spalten bleiben schmal, Tooltip mit allen Parametern', async ({ page }) => {
+  const optionWidth = () => page.locator('.opt-cell.pick').last().evaluate(el => el.getBoundingClientRect().width);
+  const before = await optionWidth();
+  // Lange Ausprägungen in der ersten Kategorie (wie „Ja: Manuelle Eingabe oder …“)
+  await page.evaluate(() => {
+    const id = JSON.parse(sessionStorage.getItem('morphologische-matrix:workspace')).active;
+    const key = 'morphologische-matrix:doc:' + id;
+    const doc = JSON.parse(localStorage.getItem(key));
+    const k1 = doc.data.categories[0].id;
+    for (const p of doc.data.parameters) if (p.categoryId === k1) p.options.forEach(o => { o.text = `Ja: ${o.text} mit manueller Eingabe oder Sammelbestellung`; });
+    localStorage.setItem(key, JSON.stringify(doc));
+  });
+  await page.reload();
+  await page.locator('.cat-band .cat-toggle').first().click();
+  const band = page.locator('.cat-band').first();
+  await expect(band.locator('.cat-picks span')).toHaveCount(3);
+  // Das Band bleibt einzeilig und verbreitert die Spalten der anderen Kategorie nicht
+  expect(Math.abs(await optionWidth() - before)).toBeLessThan(2);
+  const box = await band.boundingBox();
+  expect(box.height).toBeLessThan(50);
+  await expect(band.locator('.cat-progress')).toBeInViewport();
+  await expect(band.locator('.cat-picks')).toHaveAttribute('title', [
+    'Wassererwärmung: Ja: Thermoblock mit manueller Eingabe oder Sammelbestellung',
+    'Druckerzeugung: Ja: Vibrationspumpe mit manueller Eingabe oder Sammelbestellung',
+    'Kaffeezufuhr: Ja: Pulver (lose) mit manueller Eingabe oder Sammelbestellung',
+  ].join('\n'));
+});
