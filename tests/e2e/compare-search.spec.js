@@ -32,6 +32,19 @@ test('Konzeptvergleich: nur Unterschiede zeigen', async ({ page }) => {
   await expect(page.locator('#compareDiff')).toBeChecked();
 });
 
+test('Konzeptvergleich: „Nur Unterschiede“ vergleicht nur die angezeigten Konzepte', async ({ page }) => {
+  // Kompakt-Espresso und Smart Home wählen bei Energieversorgung und Reinigung dasselbe,
+  // nur das verworfene Konzept „Outdoor“ weicht dort ab
+  await page.check('#compareDiff');
+  await expect(page.locator('.compare-diff-count')).toHaveText('6 von 6 Parametern unterschiedlich');
+  await expect(paramRows(page)).toHaveCount(6);
+  await page.check('#compareHideDropped');
+  await expect(page.locator('.compare-diff-count')).toHaveText('4 von 6 Parametern unterschiedlich');
+  await expect(paramRows(page)).toHaveText(['Wassererwärmung', 'Druckerzeugung', 'Kaffeezufuhr', 'Bedienung']);
+  await page.uncheck('#compareHideDropped');
+  await expect(paramRows(page)).toHaveCount(6);
+});
+
 test('Konzeptvergleich: Sortierung nach Kennzahlen mit Rang', async ({ page }) => {
   // Ohne Bewertung nur nach den eigenen Merkmalen des Beispiels
   await expect(page.locator('#compareSort option')).toHaveText([
