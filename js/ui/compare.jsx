@@ -16,19 +16,26 @@ import { Util } from '../util.js';
 import { missingNote, PriorityProfile } from './render-panels.jsx';
 import { StatusChip } from './status.jsx';
 
+/** Ob ein Konzept im Vergleich angezeigt wird („Verworfene“ bzw. „mit Konflikt ausblenden“). @param {Matrix} m */
+function shownFilter(m) {
+  const hide = prefs.compareHideConflicts && m.constraints.some(x => x.type === 'excluded');
+  return (/** @type {MatrixConcept} */ c) => (!hide || !Consistency.conflicts(m, c).excluded.length)
+    && (!prefs.compareHideDropped || c.status !== 'dropped');
+}
+
 /**
  * Inhalt des Konzeptvergleichs: Konzepte in der gewählten Reihenfolge (mit Rang) und die
- * Parametergruppen – bei „Nur Unterschiede“ ohne Parameter, die alle Konzepte gleich gewählt haben.
+ * Parametergruppen – bei „Nur Unterschiede“ ohne Parameter, die alle angezeigten Konzepte gleich
+ * gewählt haben (ausgeblendete Konzepte zählen nicht).
  * @returns {CompareContent}
  */
 export function compareContent() {
   const m = state;
   const report = Evaluation.conceptReport(m);
-  const hide = prefs.compareHideConflicts && m.constraints.some(x => x.type === 'excluded');
-  const ranked = Evaluation.rankConcepts(m, report, prefs.compareSort || 'order')
-    .filter(({ figures: { concept: c } }) => !hide || !Consistency.conflicts(m, c).excluded.length)
-    .filter(({ figures: { concept: c } }) => !prefs.compareHideDropped || c.status !== 'dropped');
-  const diff = prefs.compareDiff && m.concepts.length > 1 ? Model.differingParameters(m) : null;
+  const shown = shownFilter(m);
+  const ranked = Evaluation.rankConcepts(m, report, prefs.compareSort || 'order').filter(({ figures: { concept: c } }) => shown(c));
+  const concepts = ranked.map(r => r.figures.concept);
+  const diff = prefs.compareDiff && concepts.length > 1 ? Model.differingParameters(m, concepts) : null;
   const groups = Model.categoryGroups(m).map(g => ({ ...g, items: diff ? g.items.filter(({ p }) => diff.has(p.id)) : g.items }));
   return { ranked, groups, filtered: !!diff };
 }
@@ -39,7 +46,8 @@ export function compareContent() {
  */
 export function CompareTools({ setView }) {
   const m = useMatrix();
-  const differing = Model.differingParameters(m).size;
+  const concepts = m.concepts.filter(shownFilter(m));
+  const differing = Model.differingParameters(m, concepts).size;
   const keys = /** @type {Array<keyof typeof Evaluation.RANKINGS>} */ (Object.keys(Evaluation.RANKINGS))
     .filter(k => Evaluation.RANKINGS[k].enabled(m.settings));
   /** Sortierung nach eigenen Merkmalen (je Merkmal aufsteigend und absteigend) */
@@ -57,7 +65,7 @@ export function CompareTools({ setView }) {
     <>
       <label class="check compare-diff">
         <input
-          type="checkbox" id="compareDiff" checked={!!prefs.compareDiff} disabled={m.concepts.length < 2}
+          type="checkbox" id="compareDiff" checked={!!prefs.compareDiff} disabled={concepts.length < 2}
           onChange={e => setView('compareDiff', checked(e))}
         />
         {Texts.compare.onlyDiff}

@@ -414,14 +414,15 @@ export const Model = (() => {
   /**
    * Parameter, bei denen sich die Konzepte unterscheiden („nicht gewählt“ zählt als eigene Wahl).
    * Bei weniger als zwei Konzepten unterscheidet sich nichts.
-   * @param {Matrix} m @returns {Set<string>} Parameter-IDs
+   * @param {Matrix} m @param {MatrixConcept[]} [concepts] verglichene Konzepte (Standard: alle)
+   * @returns {Set<string>} Parameter-IDs
    */
-  function differingParameters(m) {
+  function differingParameters(m, concepts = m.concepts) {
     const ids = new Set();
-    if (m.concepts.length < 2) return ids;
+    if (concepts.length < 2) return ids;
     for (const p of m.parameters) {
-      const first = m.concepts[0].selections[p.id];
-      if (m.concepts.some(c => c.selections[p.id] !== first)) ids.add(p.id);
+      const first = concepts[0].selections[p.id];
+      if (concepts.some(c => c.selections[p.id] !== first)) ids.add(p.id);
     }
     return ids;
   }

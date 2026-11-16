@@ -199,6 +199,12 @@ test('differingParameters: nur Parameter mit unterschiedlicher Wahl, „nicht ge
   assert.equal(Model.differingParameters(m).has(p.id), false);
   delete m.concepts[1].selections[p.id];
   assert.equal(Model.differingParameters(m).has(p.id), true);
+  // Nur die übergebenen Konzepte zählen (z. B. ohne ausgeblendete verworfene)
+  const shown = kaffeemaschine();
+  const kept = shown.concepts.filter(c => c.status !== 'dropped');
+  assert.deepEqual([...Model.differingParameters(shown, kept)].map(id => shown.parameters.find(x => x.id === id).name),
+    ['Wassererwärmung', 'Druckerzeugung', 'Kaffeezufuhr', 'Bedienung']);
+  assert.equal(Model.differingParameters(shown).size, 6);
   m.concepts.splice(1);
   assert.equal(Model.differingParameters(m).size, 0);
 });
